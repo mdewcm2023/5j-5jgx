@@ -21,6 +21,7 @@
 <v t="leo.20220924163559.1"><vh>config/config 問題</vh></v>
 </v>
 <v t="leo.20221017090940.1"><vh>202210 修改</vh></v>
+<v t="leo.20230426230937.1"><vh>202304 修改</vh></v>
 </v>
 <v t="leo.20190515144242.1"><vh>@clean wsgi.py</vh>
 <v t="leo.20190515144254.1"><vh>Declarations (wsgi.py)</vh></v>
@@ -115,6 +116,10 @@
 <v t="leo.20220911145040.1"><vh>@edit main.py</vh></v>
 <v t="leo.20220911145111.1"><vh>@edit nocache.py</vh></v>
 <v t="leo.20220911145241.1"><vh>@edit .gitignore</vh></v>
+</v>
+<v t="leo.20230425210435.1"><vh>@path static</vh>
+<v t="leo.20230425210455.1"><vh>@edit axuploader.js</vh></v>
+<v t="leo.20230425225055.1"><vh>resize image file</vh></v>
 </v>
 </vnodes>
 <tnodes>
@@ -718,7 +723,7 @@ def fileuploadform(edit):
 &lt;script src="/static/axuploader.js" type="text/javascript"&gt;&lt;/script&gt;
 &lt;script&gt;
 $(document).ready(function(){
-$('.prova').axuploader({url:'fileaxupload', allowExt:['jpg','png','gif','7z','pdf','zip','flv','stl','swf'],
+$('.prova').axuploader({url:'fileaxupload', allowExt:['jpg','png','gif','7z','pdf','zip','ttt','stl','txt','html'],
 finish:function(x,files)
     {
         alert('All files have been uploaded: '+files);
@@ -835,7 +840,8 @@ def generate_pages():
         return set_css() + "&lt;div class='container'&gt;&lt;nav&gt;" + \
                      directory + "&lt;/nav&gt;&lt;section&gt;&lt;h1&gt;Generate Pages&lt;/h1&gt;" + \
                      "已經將網站轉為靜態網頁!" + \
-                     "&lt;/section&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</t>
+                     "&lt;/section&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"
+</t>
 <t tx="leo.20190515144237.24"># seperate page need heading and edit variables, if edit=1, system will enter edit mode
 # single page edit will use ssavePage to save content, it means seperate save page
 @app.route('/get_page')
@@ -1936,6 +1942,7 @@ def send_file(path):
 
 
 # setup static directory
+#@app.route('/images/&lt;path:path&gt;')
 #@app.route('/images/&lt;path:path&gt;')
 </t>
 <t tx="leo.20190515144238.15">@app.route('/images/&lt;path:path&gt;')
@@ -3460,7 +3467,8 @@ http_server.serve_forever()</t>
         return url
     else:
         url = url.replace("http://", "https://", 1)
-        return url</t>
+        return url
+</t>
 <t tx="leo.20221017090913.1">@app.route('/acpform')
 def acpform():
     
@@ -3479,7 +3487,8 @@ def acpform():
                  directory + "&lt;/nav&gt;&lt;section&gt;&lt;h1&gt;Acp From&lt;/h1&gt;&lt;form method='post' action='doAcp'&gt; \
                 Commit Messages:&lt;textarea name='commit' rows='1' cols='80'&gt;&lt;/textarea&gt; \
     &lt;input type='submit' value='acp'&gt;&lt;/form&gt; \
-    &lt;/section&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</t>
+    &lt;/section&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"
+</t>
 <t tx="leo.20221017090933.1">@app.route('/doAcp', methods=['POST'])
 def doAcp():
 
@@ -3506,6 +3515,95 @@ def doAcp():
 
 </t>
 <t tx="leo.20221017090940.1">add acpForm and doAcp</t>
+<t tx="leo.20230425210435.1"></t>
+<t tx="leo.20230425225055.1">function uploadFileXhr(o, start_byte, up, div_p, resize_width, resize_height) {
+    var fd = new FormData();
+
+    var file = o.files[0];
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var new_width = img.width;
+            var new_height = img.height;
+
+            if (resize_width &amp;&amp; resize_height) {
+                new_width = resize_width;
+                new_height = resize_height;
+            } else if (resize_width) {
+                new_height = new_width * (img.height / img.width);
+                new_width = resize_width;
+            } else if (resize_height) {
+                new_width = new_height * (img.width / img.height);
+                new_height = resize_height;
+            }
+
+            canvas.width = new_width;
+            canvas.height = new_height;
+            ctx.drawImage(img, 0, 0, new_width, new_height);
+
+            var dataURI = canvas.toDataURL();
+            var base64 = dataURI.split(',')[1];
+
+            fd.append('file_data', base64); // append the base64-encoded data to the form data
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', up, true);
+            xhr.setRequestHeader('X-File-Name', encodeURIComponent(o.value));
+            xhr.setRequestHeader('X-Start-Byte', start_byte);
+            xhr.setRequestHeader('X-File-Size', file.size);
+            xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+            xhr.upload.onprogress = function(e) {
+                var pc = parseInt(e.loaded / e.total * 100);
+                $('#' + div_p + '_progress').css('width', pc + '%');
+            };
+            xhr.onload = function() {
+                $('#' + div_p + '_progress').hide();
+                $('#' + div_p + '_form').show();
+                $('#' + div_p + '_response').html(xhr.responseText);
+            };
+            xhr.send(fd);
+        }
+        img.src = e.target.result;
+    }
+
+    reader.readAsDataURL(file);
+}
+</t>
+<t tx="leo.20230426230937.1">add the resizeImage() to axuploader.js
+
+function resizeImage(file, maxWidth, callback) {
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var ratio = Math.min(maxWidth / img.width);
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(callback);
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
+and starts at line 103 of axuploader.js, reduce the image file size and add_file, but the server can not get the upload file name.
+
+var file = this.files[i];
+resizeImage(file, 600, function(resizedImageBlob){
+//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+var fileName = file.name;
+var fileSize = resizedImageBlob.size;
+//console.log(fileName);
+//console.log(fileSize);
+add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
+});</t>
 <t tx="yen.20200710111924.1">def checkMath():
 
     """Use LaTeX Equation rendering

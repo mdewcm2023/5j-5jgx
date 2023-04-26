@@ -10,6 +10,24 @@
  */
 // 2013.08.21 Yen modified Chrome file append error
 
+function resizeImage(file, maxWidth, callback) {
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        var img = new Image();
+        img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var ratio = Math.min(maxWidth / img.width);
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(callback);
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
 (function($)
 {
 	var methods =
@@ -39,7 +57,7 @@
 				if(options)	$.extend(settings,options);
 				var allowExt=settings.allowExt.join('|').toLowerCase();
 
-/*================================================================================*\
+                /*================================================================================*\
 				 Test if support pure ajax upload
 				\*================================================================================*/
 				var _browse = document.createElement('input');
@@ -82,7 +100,15 @@
 						{
 							if(fileCount<=settings.maxFiles)
 							{
-								add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+								var file = this.files[i];
+                                resizeImage(file, 600, function(resizedImageBlob){
+								//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+								var fileName = file.name;
+								var fileSize = resizedImageBlob.size;
+							    //console.log(fileName);
+								//console.log(fileSize);
+                                add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
+                                });
 							}
 						}
 					}
@@ -187,6 +213,7 @@
 				\*================================================================================*/
 				function add_file(t,o,n,s,numF)
 				{
+					//console.log(n);
 					var ext=n.split('.').pop().toLowerCase();//file ext
 
 					/*================================================================================*\
@@ -221,6 +248,7 @@
 					var up=$('<input type="button" value="Upload" class="ax-upload" />').bind('click',function(){ this.disabled=true; });
 
 					var tr=$('<tr />').appendTo(t);
+					console.log(n);
 					var td_n=$('<td class="ax-file-name" title="'+n+'" />').appendTo(tr).html(n);
 					var td_s=$('<td class="ax-size-td" />').appendTo(tr).html(s);
 					var td_p=$('<td class="ax-progress-td" />').appendTo(tr);
@@ -285,14 +313,14 @@
 					 * if slice is not supported then send all file at once
 					\*==============================================================*/
 
-//Initialize a new FileReader object
-var reader = new FileReader();
+					//Initialize a new FileReader object
+					var reader = new FileReader();
 
-//Slice the file into the desired chunk
-var chunk = o.slice(start_byte, end_byte);
-reader.readAsBinaryString(chunk);
+					//Slice the file into the desired chunk
+					var chunk = o.slice(start_byte, end_byte);
+					reader.readAsBinaryString(chunk);
 
-/*================================================================================*\
+					/*================================================================================*\
 					 Prepare xmlhttpreq object for file upload Bind functions and progress
 					\*================================================================================*/
 					var xhr = new XMLHttpRequest();//prepare xhr for upload
