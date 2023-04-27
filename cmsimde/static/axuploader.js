@@ -8,9 +8,10 @@
  *
  * 
  */
-// 2013.08.21 Yen modified Chrome file append error
+// 2013.08.21 Yen corrected Chrome file append error
+//2023.04.27 Yen add the resizeImage before uploading
 
-/*
+/* by using this, can not get the new file name
 function resizeImage(file, maxWidth, callback) {
     var reader = new FileReader();
     reader.onload = function(event) {
