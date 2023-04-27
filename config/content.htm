@@ -86,7 +86,193 @@ function dataURLtoFile(dataUrl, filename) {
 		}
 	}
 }</pre>
-<p><img alt="" height="375" src="/images/R.jpg" width="600"/></p><h1>Games</h1>
+<p><img alt="" height="375" src="/images/R.jpg" width="600"/></p><h2>ax5</h2>
+<p>using ax5:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">var uploader = new ax5.ui.uploader({
+  target: $('[data-ax5uploader="basic"]'),
+  form: {
+    action: "/upload",
+    fileName: "file"
+  },
+  multiple: true,
+  manualUpload: true,
+  onprogress: function () {},
+  onuploaderror: function () {},
+  onuploaded: function () {}
+});
+
+uploader.on('beforeUpload', function () {
+  var files = uploader.getFiles();
+  for (var i = 0; i &lt; files.length; i++) {
+    var file = files[i];
+    var extension = file.name.split('.').pop().toLowerCase();
+    if (extension == 'jpg' || extension == 'png' || extension == 'gif') {
+      var img = new Image();
+      img.src = window.URL.createObjectURL(file);
+      img.onload = function () {
+        if (this.width &gt; 800) {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var ratio = 800 / this.width;
+          canvas.width = this.width * ratio;
+          canvas.height = this.height * ratio;
+          ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob(function (blob) {
+            file = new File([blob], file.name, {type: file.type});
+          });
+        }
+      };
+    }
+  }
+});
+</pre>
+<p>html side:</p>
+<pre class="brush:html;auto-links:false;toolbar:false" contenteditable="false">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;meta charset="UTF-8"&gt;
+	&lt;title&gt;My Web Application&lt;/title&gt;
+	&lt;!-- include ax5 library from CDN --&gt;
+	&lt;script src="https://cdn.rawgit.com/ax5ui/ax5core/master/dist/ax5core.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.rawgit.com/ax5ui/ax5ui-datepicker/master/dist/ax5ui-datepicker.min.js"&gt;&lt;/script&gt;
+	&lt;link rel="stylesheet" href="https://cdn.rawgit.com/ax5ui/ax5ui-datepicker/master/dist/ax5ui-datepicker.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;!-- your web application content goes here --&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>ax5 works with Brython:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, alert
+import ax5.ui.datepicker as datepicker
+
+# create a datepicker component
+dp = datepicker.create(
+  document["datepicker"],
+  {"mode": "date", "selectMode": "day", "control": {"left": "&lt;", "yearTmpl": "%s", "monthTmpl": "%s"}},
+  {"onStateChanged": lambda e: alert(e["state"]["focusedDate"])},
+  {"minDate": "2020-01-01", "maxDate": "2023-12-31", "defaultDate": "2023-04-27"}
+)
+
+# show the datepicker component when the button is clicked
+def show_datepicker(ev):
+  dp.popup()
+
+document["btn-show-datepicker"].bind("click", show_datepicker)
+</pre>
+<p>html side:</p>
+<pre class="brush:html;auto-links:false;toolbar:false" contenteditable="false">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;My Brython App&lt;/title&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/brython@3.9.12/brython.min.js"&gt;&lt;/script&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/ax5core@1.12.2/dist/ax5core.min.js"&gt;&lt;/script&gt;
+  &lt;script src="https://cdn.jsdelivr.net/npm/ax5ui-datepicker@1.0.1/dist/ax5ui-datepicker.min.js"&gt;&lt;/script&gt;
+  &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ax5ui-datepicker@1.0.1/dist/ax5ui-datepicker.css"&gt;
+&lt;/head&gt;
+&lt;body onload="brython()"&gt;
+  &lt;button id="btn-show-datepicker"&gt;Show Datepicker&lt;/button&gt;
+  &lt;div id="datepicker"&gt;&lt;/div&gt;
+  &lt;script type="text/python"&gt;
+    # your Python code goes here
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>Create pull-down menu by using ax5 and Brython:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, alert
+import ax5.ui.menu as menu
+
+# define the menu items
+menu_items = [
+    {"label": "Item 1", "value": "item1"},
+    {"label": "Item 2", "value": "item2"},
+    {"label": "Item 3", "value": "item3"},
+    {"label": "Item 4", "value": "item4"}
+]
+
+# create the menu component
+m = menu.create(
+    document["menu"],
+    {"theme": "default", "direction": "auto", "offset": {"left": 0, "top": 0}},
+    {"onSelect": lambda e: alert(e["selected"])},
+    menu_items
+)
+
+# show the menu component when the button is clicked
+def show_menu(ev):
+    m.popup()
+
+document["btn-show-menu"].bind("click", show_menu)
+</pre>
+<p>html side:</p>
+<pre class="brush:html;auto-links:false;toolbar:false" contenteditable="false">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;My Brython App&lt;/title&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/brython@3.9.12/brython.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/ax5core@1.12.2/dist/ax5core.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/ax5ui-menu@1.0.7/dist/ax5ui-menu.min.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ax5ui-menu@1.0.7/dist/ax5ui-menu.css"&gt;
+&lt;/head&gt;
+&lt;body onload="brython()"&gt;
+    &lt;button id="btn-show-menu"&gt;Show Menu&lt;/button&gt;
+    &lt;div id="menu"&gt;&lt;/div&gt;
+    &lt;script type="text/python"&gt;
+        # your Python code goes here
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<p>Using axios:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, ajax
+import axios
+
+# function to handle form submission
+def submit_form(ev):
+    ev.preventDefault()  # prevent default form submission
+    form_data = FormData(document["my-form"])  # create FormData object from form
+    axios.post("/submit", data=form_data)  # send form data to Flask server
+
+document["my-form"].bind("submit", submit_form)
+</pre>
+<p>Flask side:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    file = request.files['file']  # get the file object from the request
+    # process the file object here
+    return 'File uploaded successfully'
+
+if __name__ == '__main__':
+    app.run()
+</pre>
+<p>Using axios and Brython to GET:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import axios
+
+axios.get('https://api.example.com/data')
+    .then(function(response) {
+        console.log(response.data);
+    })
+    .catch(function(error) {
+        console.error(error);
+    });
+</pre>
+<p>axios and traditional XMLHttpRequest (XHR) (also known as AJAX) are both ways to make HTTP requests in JavaScript. While both can be used to accomplish similar tasks, axios provides a number of advantages over traditional AJAX:</p>
+<ol>
+<li>Promise-based API: axios uses a promise-based API, which makes it easier to manage asynchronous code and handle errors.</li>
+<li>Automatic request cancellation: axios allows you to cancel requests that are in progress, which can help to improve performance and reduce network traffic.</li>
+<li>Intercepting requests and responses: axios allows you to intercept requests and responses, which can be useful for adding authentication headers, logging, or modifying requests or responses.</li>
+<li>Support for Cross-site requests: axios includes built-in support for cross-site requests (CSRF) protection, which is important for security when making requests to a different domain than the one hosting the page.</li>
+<li>Simpler syntax: axios provides a simpler and more consistent API for making requests than traditional AJAX.</li>
+</ol>
+<p>Overall, axios provides a more modern and convenient way to make HTTP requests than traditional AJAX, and is widely used and well-documented. However, there are still situations where traditional AJAX may be more appropriate, depending on the specific requirements of your application.</p>
+<p>axios was developed by Matt Zabriskie, a web developer based in New York City. It was originally released in 2014 as an alternative to the jQuery.ajax() function, and has since become a popular library for making HTTP requests in JavaScript applications.<br/><br/>The project is open source and hosted on GitHub, where it is maintained by a community of contributors. The library is licensed under the MIT license, which allows for free use and modification of the code in both open source and commercial projects.</p><h1>Games</h1>
 <p>Learn Python and Javascript:</p>
 <p style="padding-left: 30px;">Python:</p>
 <p style="padding-left: 60px;"><a href="/downloads/python_beginners.pdf">python_beginners.pdf</a></p>
