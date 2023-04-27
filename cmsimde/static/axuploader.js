@@ -10,6 +10,7 @@
  */
 // 2013.08.21 Yen modified Chrome file append error
 
+/*
 function resizeImage(file, maxWidth, callback) {
     var reader = new FileReader();
     reader.onload = function(event) {
@@ -26,6 +27,62 @@ function resizeImage(file, maxWidth, callback) {
         img.src = event.target.result;
     }
     reader.readAsDataURL(file);
+}
+*/
+
+// Function to resize an image
+function resizeImage(file, maxWidth, callback) {
+  // Create a new FileReader object
+  const reader = new FileReader();
+
+  // Add an event listener to the FileReader object that listens for when the file is loaded
+  reader.addEventListener("load", () => {
+    // Create a new image object
+    const img = new Image();
+
+      // Add an event listener to the image object that listens for when the image is loaded
+      img.addEventListener("load", () => {
+      var ratio = Math.min(maxWidth / img.width);
+      // Create a new canvas object
+      const canvas = document.createElement("canvas");
+
+      // Set the canvas width and height to the new width and height of the image
+	  canvas.width = img.width * ratio;
+	  canvas.height = img.height * ratio;
+
+      // Draw the image onto the canvas with the new width and height
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas to a data URL
+      const dataUrl = canvas.toDataURL("image/jpeg");
+
+      // Create a new file object from the data URL
+      const resizedFile = dataURLtoFile(dataUrl, file.name);
+
+      // Return the resized file
+      callback(resizedFile);
+    });
+
+    // Set the source of the image object to the data URL of the file
+    img.src = reader.result;
+  });
+
+  // Read the file as a data URL
+  reader.readAsDataURL(file);
+}
+
+// Function to convert a data URL to a file object
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
 }
 
 (function($)

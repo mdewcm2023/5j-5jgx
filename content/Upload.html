@@ -142,7 +142,82 @@ img.add_border {
           
         </header>
     <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='Games.html'>Next</a> >> Games<br /><h1>Upload</h1>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='Games.html'>Next</a> >> Games</div>
+<p>Since the resolution of mobile phone camera is quite high, in order to get the resonable resolution images file upload for cmsimde based CMS, image files needed to reduce before uploading.</p>
+<p>Add the following functions to axuploader.js:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// Function to resize an image
+function resizeImage(file, maxWidth, callback) {
+  // Create a new FileReader object
+  const reader = new FileReader();
+
+  // Add an event listener to the FileReader object that listens for when the file is loaded
+  reader.addEventListener("load", () =&gt; {
+    // Create a new image object
+    const img = new Image();
+
+      // Add an event listener to the image object that listens for when the image is loaded
+      img.addEventListener("load", () =&gt; {
+      var ratio = Math.min(maxWidth / img.width);
+      // Create a new canvas object
+      const canvas = document.createElement("canvas");
+
+      // Set the canvas width and height to the new width and height of the image
+	  canvas.width = img.width * ratio;
+	  canvas.height = img.height * ratio;
+
+      // Draw the image onto the canvas with the new width and height
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas to a data URL
+      const dataUrl = canvas.toDataURL("image/jpeg");
+
+      // Create a new file object from the data URL
+      const resizedFile = dataURLtoFile(dataUrl, file.name);
+
+      // Return the resized file
+      callback(resizedFile);
+    });
+
+    // Set the source of the image object to the data URL of the file
+    img.src = reader.result;
+  });
+
+  // Read the file as a data URL
+  reader.readAsDataURL(file);
+}
+
+// Function to convert a data URL to a file object
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}</pre>
+<p>and modify the add_file() part:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">if(isAjaxUpload)
+{
+	for (var i = 0; i &lt; this.files.length; i++) 
+	{
+		if(fileCount&lt;=settings.maxFiles)
+		{
+			var file = this.files[i];
+			resizeImage(file, 600, function(resizedImageBlob){
+			//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+			var fileName = file.name;
+			var fileSize = resizedImageBlob.size;
+			//console.log(fileName);
+			//console.log(fileSize);
+			add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
+			});
+		}
+	}
+}</pre>
+<p><img alt="" height="375" src="./../images/R.jpg" width="600"/></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='Games.html'>Next</a> >> Games</div>
         
     <!-- footer -->
       <div class="container">

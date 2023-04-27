@@ -12,13 +12,84 @@
 <p>利用程式控制 OBS:</p>
 <p style="padding-left: 30px;"><a href="https://docs.obsproject.com/scripting">https://docs.obsproject.com/scripting</a> </p>
 <p></p><h1>Upload</h1>
-<p><img alt="" height="500" src="/get_page/Upload/undefined" width="800"/></p><h1>Games</h1>
+<p>Add the following functions to axuploader.js:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// Function to resize an image
+function resizeImage(file, maxWidth, callback) {
+  // Create a new FileReader object
+  const reader = new FileReader();
+
+  // Add an event listener to the FileReader object that listens for when the file is loaded
+  reader.addEventListener("load", () =&gt; {
+    // Create a new image object
+    const img = new Image();
+
+      // Add an event listener to the image object that listens for when the image is loaded
+      img.addEventListener("load", () =&gt; {
+      var ratio = Math.min(maxWidth / img.width);
+      // Create a new canvas object
+      const canvas = document.createElement("canvas");
+
+      // Set the canvas width and height to the new width and height of the image
+	  canvas.width = img.width * ratio;
+	  canvas.height = img.height * ratio;
+
+      // Draw the image onto the canvas with the new width and height
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas to a data URL
+      const dataUrl = canvas.toDataURL("image/jpeg");
+
+      // Create a new file object from the data URL
+      const resizedFile = dataURLtoFile(dataUrl, file.name);
+
+      // Return the resized file
+      callback(resizedFile);
+    });
+
+    // Set the source of the image object to the data URL of the file
+    img.src = reader.result;
+  });
+
+  // Read the file as a data URL
+  reader.readAsDataURL(file);
+}
+
+// Function to convert a data URL to a file object
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}</pre>
+<p>and modify the add_file() part:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">if(isAjaxUpload)
+{
+	for (var i = 0; i &lt; this.files.length; i++) 
+	{
+		if(fileCount&lt;=settings.maxFiles)
+		{
+			var file = this.files[i];
+			resizeImage(file, 600, function(resizedImageBlob){
+			//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+			var fileName = file.name;
+			var fileSize = resizedImageBlob.size;
+			//console.log(fileName);
+			//console.log(fileSize);
+			add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
+			});
+		}
+	}
+}</pre>
+<p><img alt="" height="375" src="/images/R.jpg" width="600"/></p><h1>Games</h1>
 <p>Learn Python and Javascript:</p>
 <p style="padding-left: 30px;">Python:</p>
-<<<<<<< HEAD
-=======
 <p style="padding-left: 60px;"><a href="/downloads/python_beginners.pdf">python_beginners.pdf</a></p>
->>>>>>> 3ff5f3c2b3d91eb1a0566262b484d60686996ca7
 <p style="padding-left: 60px;"><a href="file:///C:/Users/admin/Downloads/978-1-4842-7058-5.pdf">Programming Microcontrollers with Python</a> (2021) (必須使用校園網路(Proxy or VPN) 才能下載)</p>
 <p style="padding-left: 60px;"><a href="file:///C:/Users/admin/Downloads/978-1-4302-6425-5.pdf">Learn Raspberry Pi Programming with Python</a> (2014) (必須使用校園網路(Proxy or VPN) 才能下載)</p>
 <p style="padding-left: 30px;">Javascript:</p>
@@ -160,6 +231,7 @@ def upload():
 </pre>
 <p>In the above code, the file_data field is added to the data option of the $.axuploader method and its value is set to the base64-encoded data URI of the resized image. This data is sent to the Flask server as the request body of the POST request. The Flask server can then decode this data and save it to a file as shown in the previous code snippet.</p>
 <p>If file is uploaded chunk by chunk:</p>
+<p>Python</p>
 <pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
 import base64
 import uuid
@@ -192,6 +264,21 @@ def upload():
 
             return 'Upload successful'
     return 'Upload failed'
+</pre>
+<p>Javascript:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">$.axuploader({
+    url: '/upload',
+    data: {
+        file_data: canvas.toDataURL(file.type).split(',')[1] // pass the base64-encoded data
+    },
+    chunkSize: 1024 * 1024, // upload in 1MB chunks
+    success: function(response) {
+        console.log('Upload successful:', response);
+    },
+    error: function(xhr) {
+        console.error('Upload failed:', xhr.responseText);
+    }
+});
 </pre>
 <p></p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
