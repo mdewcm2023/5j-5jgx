@@ -159,6 +159,7 @@ function dataURLtoFile(dataUrl, filename) {
 							if(fileCount<=settings.maxFiles)
 							{
 								var file = this.files[i];
+								if (file.type.match(/image.*/) && file.name.match(/\.(jpg|png|gif)$/)) {
                                 resizeImage(file, 600, function(resizedImageBlob){
 								//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
 								var fileName = file.name;
@@ -167,6 +168,11 @@ function dataURLtoFile(dataUrl, filename) {
 								//console.log(fileSize);
                                 add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
                                 });
+							  }
+							  else
+							  {
+								add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
+							  }
 							}
 						}
 					}
