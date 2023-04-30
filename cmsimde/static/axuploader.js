@@ -35,12 +35,10 @@ function resizeImage(file, maxWidth, callback) {
 function resizeImage(file, maxWidth, callback) {
   // Create a new FileReader object
   const reader = new FileReader();
-
   // Add an event listener to the FileReader object that listens for when the file is loaded
   reader.addEventListener("load", () => {
     // Create a new image object
     const img = new Image();
-
       // Add an event listener to the image object that listens for when the image is loaded
       img.addEventListener("load", () => {
       var ratio = Math.min(maxWidth / img.width);
@@ -92,7 +90,6 @@ function dataURLtoFile(dataUrl, filename) {
 	{
 		init : function(options)
 		{
-
     	    return this.each(function() 
     	    {
     	        var settings = {
@@ -159,7 +156,7 @@ function dataURLtoFile(dataUrl, filename) {
 							if(fileCount<=settings.maxFiles)
 							{
 								var file = this.files[i];
-								if (file.type.match(/image.*/) && file.name.match(/\.(jpg|png|gif)$/)) {
+								if (file.type.match(/image.*/)) {
                                 resizeImage(file, 600, function(resizedImageBlob){
 								//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
 								var fileName = file.name;
@@ -223,12 +220,12 @@ function dataURLtoFile(dataUrl, filename) {
 				\*================================================================================*/
 			    var fileList=$('<table class="ax-file-list" />').append('<thead><tr>'+
 													 	'<th>File</th>'+
+														'<th>Rename</th>'+
 													 	'<th>Size</th>'+
 													 	'<th>Progress</th>'+
 													 	'<th>Remove</th>'+
 													 	'<th>Upload</th>'+
 													 '</tr></thead>').appendTo(mainForm);
-
 
 				/*================================================================================*\
 				Functions that sets the url for sending additional data
@@ -312,7 +309,8 @@ function dataURLtoFile(dataUrl, filename) {
 					var up=$('<input type="button" value="Upload" class="ax-upload" />').bind('click',function(){ this.disabled=true; });
 
 					var tr=$('<tr />').appendTo(t);
-					console.log(n);
+					//console.log(n);
+					var rename=$('<label for="filename">File name:</label><input type="text" id="filename" name="filename" value="'+n+'"/>').appendTo(tr);
 					var td_n=$('<td class="ax-file-name" title="'+n+'" />').appendTo(tr).html(n);
 					var td_s=$('<td class="ax-size-td" />').appendTo(tr).html(s);
 					var td_p=$('<td class="ax-progress-td" />').appendTo(tr);
@@ -324,7 +322,7 @@ function dataURLtoFile(dataUrl, filename) {
 					 Prepare to send
 					\*================================================================================*/
 					var enc_name=encodeURIComponent(n);//encode file name
-
+	
 					if(!isAjaxUpload)
 					{
 						var file_holder=$('<div />').appendTo(td_n).hide().append(o);						

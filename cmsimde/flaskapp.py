@@ -2333,6 +2333,8 @@ def send_file(path):
 # setup static directory
 #@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
 @app.route('/images/<path:path>')
 def send_images(path):
     

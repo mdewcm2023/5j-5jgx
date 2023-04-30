@@ -1944,6 +1944,8 @@ def send_file(path):
 # setup static directory
 #@app.route('/images/&lt;path:path&gt;')
 #@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
 </t>
 <t tx="leo.20190515144238.15">@app.route('/images/&lt;path:path&gt;')
 def send_images(path):
