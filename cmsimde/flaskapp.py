@@ -1519,7 +1519,7 @@ def imageuploadform(edit):
         directory = render_menu(head, level, page)
         return set_css() + "<div class='container'><nav>" + \
                  directory + "</nav><section><h1>image files upload</h1>" + '''
-<script src="/static/jquery.js" type="text/javascript"></script>
+<script src="/static/jquery-1.7.js" type="text/javascript"></script>
 <script src="/static/axuploader.js" type="text/javascript"></script>
 <script>
 $(document).ready(function(){
@@ -2331,6 +2331,10 @@ def send_file(path):
 
 
 # setup static directory
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')

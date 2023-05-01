@@ -105,7 +105,7 @@ function dataURLtoFile(dataUrl, filename) {
         	      'error':function(e){},
         	      'GIFprogress':'',
         	      'enable':true,
-        	      'chunkSize':1024*1024//default 1Mb
+        	      'chunkSize':1024*1024 //default 1Mb
     	        };
 
 				var _this=this;
@@ -161,8 +161,6 @@ function dataURLtoFile(dataUrl, filename) {
 								//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
 								var fileName = file.name;
 								var fileSize = resizedImageBlob.size;
-							    //console.log(fileName);
-								//console.log(fileSize);
                                 add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
                                 });
 							  }
@@ -220,7 +218,6 @@ function dataURLtoFile(dataUrl, filename) {
 				\*================================================================================*/
 			    var fileList=$('<table class="ax-file-list" />').append('<thead><tr>'+
 													 	'<th>File</th>'+
-														'<th>Rename</th>'+
 													 	'<th>Size</th>'+
 													 	'<th>Progress</th>'+
 													 	'<th>Remove</th>'+
@@ -274,7 +271,6 @@ function dataURLtoFile(dataUrl, filename) {
 				\*================================================================================*/
 				function add_file(t,o,n,s,numF)
 				{
-					//console.log(n);
 					var ext=n.split('.').pop().toLowerCase();//file ext
 
 					/*================================================================================*\
@@ -306,11 +302,9 @@ function dataURLtoFile(dataUrl, filename) {
 					});
 
 					//prepare abort and upload button
-					var up=$('<input type="button" value="Upload" class="ax-upload" />').bind('click',function(){ this.disabled=true; });
+					var up=$('<input type="button" value="Upload" class="ax-upload" id="ax-upload"' + fileCount +'" />').bind('click',function(){ this.disabled=true; });
 
 					var tr=$('<tr />').appendTo(t);
-					//console.log(n);
-					var rename=$('<label for="filename">File name:</label><input type="text" id="filename" name="filename" value="'+n+'"/>').appendTo(tr);
 					var td_n=$('<td class="ax-file-name" title="'+n+'" />').appendTo(tr).html(n);
 					var td_s=$('<td class="ax-size-td" />').appendTo(tr).html(s);
 					var td_p=$('<td class="ax-progress-td" />').appendTo(tr);
@@ -358,68 +352,62 @@ function dataURLtoFile(dataUrl, filename) {
 						});
 					}
 				}
+				
+				
+	function uploadFileXhr(o, start_byte, up, div_p) {
+    var totals = o.size;
+    var chunk;
+    var peice = settings.chunkSize; //bytes to upload at once
 
-				//recrusive file upload with chunk method
-				function uploadFileXhr(o,start_byte,up,div_p)
-				{
-					var totals=o.size;
-					var chunk;	
-					var peice=settings.chunkSize;//bytes to upload at once
+    var end_byte = start_byte + peice;
+    var peice_count = end_byte / peice;
+    var is_last = (totals - end_byte <= 0) ? 1 : 0;
 
-					var end_byte=start_byte+peice;
-					var peice_count=end_byte/peice;
-					var is_last=(totals-end_byte<=0)?1:0;
+    /*===============================================================*\
+     * Detect support slice method
+     * if slice is not supported then send all file at once
+     \*==============================================================*/
 
-					/*===============================================================*\
-					 * Detect support slice method
-					 * if slice is not supported then send all file at once
-					\*==============================================================*/
+    // Initialize a new FileReader object
+    var reader = new FileReader();
 
-					//Initialize a new FileReader object
-					var reader = new FileReader();
+    // Slice the file into the desired chunk
+    var chunk = o.slice(start_byte, end_byte);
+    reader.readAsBinaryString(chunk);
 
-					//Slice the file into the desired chunk
-					var chunk = o.slice(start_byte, end_byte);
-					reader.readAsBinaryString(chunk);
+    /*================================================================================*\
+     Prepare xmlhttpreq object for file upload Bind functions and progress
+     \*================================================================================*/
+    var xhr = new XMLHttpRequest(); // prepare xhr for upload
 
-					/*================================================================================*\
-					 Prepare xmlhttpreq object for file upload Bind functions and progress
-					\*================================================================================*/
-					var xhr = new XMLHttpRequest();//prepare xhr for upload
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            if (is_last == 0) {
+                uploadFileXhr(o, end_byte, up, div_p);
+            } else {
+                onFinish(xhr.responseText,o.name,up);
+                div_p.html('100%').css('width', '100%');
+            }
+        }
+    };
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            var perc = Math.round((e.loaded + peice_count * peice - peice) * 100 / totals);
+            div_p.html(perc + '%').css('width', perc + '%');
+        }
+    };
 
-					xhr.onreadystatechange=function()
-					{
-						if(this.readyState == 4 && this.status == 200)
-						{
-							if(is_last==0)
-							{
-								uploadFileXhr(o,end_byte,up,div_p);
-							}
-							else
-							{
-								onFinish(xhr.responseText,o.name,up);
-								div_p.html('100%').css('width','100%');
-							}
-						}
-					};
-					xhr.upload.onprogress=function(e)
-					{
-						if (e.lengthComputable) 
-						{
-							var perc = Math.round((e.loaded+peice_count*peice-peice)*100/totals);
-							div_p.html(perc+'%').css('width',perc+'%');
-						}
-					};
+    xhr.upload.onerror = settings.error(xhr.responseText, o.name);
+    var finalUrl=get_final_url(encodeURIComponent(o.name));
+    xhr.open('POST', finalUrl + '&start=' + start_byte, settings.async); // url + async/sync
+    xhr.setRequestHeader('Cache-Control', 'no-cache');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // header
+    // have to use json utf-8 charset
+    xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    xhr.send(chunk); // send request of file
+}
 
-					xhr.upload.onerror=settings.error(xhr.responseText,o.name);
-					var finalUrl=get_final_url(encodeURIComponent(o.name));
-					xhr.open('POST',finalUrl+'&start='+start_byte,settings.async);//url + async/sync
-					xhr.setRequestHeader('Cache-Control', 'no-cache');
-					xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');//header
-                    // have to use json utf-8 charset
-                    xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-					xhr.send(chunk);//send request of file 
-				}
+// ends hr
 
 				/*=======================================================
 				 * Disable option
