@@ -24,9 +24,8 @@ jobs:
       - name: Test LaTeX
         working-directory: ./latex
         run: |
-          xelatex cd_report.tex
-          xelatex cd_report.tex
-          xelatex cd_report.tex
+          xelatex report.tex
+          xelatex report.tex
 
       - name: Bump version and push tag
         id: tag_version
@@ -52,6 +51,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./latex/cd_report.pdf
-          asset_name: cd_report.pdf
+          asset_path: ./latex/report.pdf
+          asset_name: report.pdf
           asset_content_type: pdf
