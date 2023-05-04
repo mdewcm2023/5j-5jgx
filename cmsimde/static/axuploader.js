@@ -9,29 +9,12 @@
  * 
  */
 // 2013.08.21 Yen corrected Chrome file append error
-//2023.04.27 Yen add the resizeImage before uploading
+//2023.04.27 Yen add the resizeImage and rename functions before uploading
 
-/* by using this, can not get the new file name
-function resizeImage(file, maxWidth, callback) {
-    var reader = new FileReader();
-    reader.onload = function(event) {
-        var img = new Image();
-        img.onload = function() {
-            var canvas = document.createElement('canvas');
-            var ctx = canvas.getContext('2d');
-            var ratio = Math.min(maxWidth / img.width);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob(callback);
-        }
-        img.src = event.target.result;
-    }
-    reader.readAsDataURL(file);
-}
-*/
 
-// Function to resize an image
+/*================================================================================*\
+ Add the resizeImage() before call add_file()
+\*================================================================================*/
 function resizeImage(file, maxWidth, callback) {
   // Create a new FileReader object
   const reader = new FileReader();
@@ -71,7 +54,10 @@ function resizeImage(file, maxWidth, callback) {
   reader.readAsDataURL(file);
 }
 
-// Function to convert a data URL to a file object
+
+/*================================================================================*\
+ Function to convert a data URL to a file object
+\*================================================================================*/
 function dataURLtoFile(dataUrl, filename) {
   const arr = dataUrl.split(",");
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -84,6 +70,10 @@ function dataURLtoFile(dataUrl, filename) {
   return new File([u8arr], filename, { type: mime });
 }
 
+
+/*================================================================================*\
+ Function for axuploader plugin
+\*================================================================================*/
 (function($)
 {
 	var methods =
@@ -119,7 +109,6 @@ function dataURLtoFile(dataUrl, filename) {
 				_browse.type = 'file'; 
 				_browse.name='ax-files[]';
 			    var isAjaxUpload=('multiple' in _browse &&  typeof File != "undefined" &&  typeof (new XMLHttpRequest()).upload != "undefined" );
-			   // isAjaxUpload=false;
 
 				/*================================================================================*\
 				 helper variables
@@ -142,11 +131,9 @@ function dataURLtoFile(dataUrl, filename) {
 
 			    var mainForm=$('<form target="ax-main-frame" method="POST" action="" encType="multipart/form-data" />').appendTo(_this);
 
-
 				/*================================================================================*\
 				 Browse input used for selecting files to upload. Cloned for normal upload
 				\*================================================================================*/
-
 
 			    var browse=$(_browse).attr('multiple',isAjaxUpload).appendTo(mainForm).bind('change',function(){
 					if(isAjaxUpload)
@@ -155,13 +142,12 @@ function dataURLtoFile(dataUrl, filename) {
 						{
 							if(fileCount<=settings.maxFiles)
 							{
-								var file = this.files[i];
-								if (file.type.match(/image.*/)) {
-                                resizeImage(file, 600, function(resizedImageBlob){
+								if (this.files[i].type.match(/image.*/)) {
+                                resizeImage(this.files[i], 800, function(resizedImageBlob){
+								// before add resizeImage()
 								//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
-								var fileName = file.name;
 								var fileSize = resizedImageBlob.size;
-                                add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
+                                add_file(fileList,resizedImageBlob,resizedImageBlob.name,fileSize,fileCount);
                                 });
 							  }
 							  else
@@ -212,18 +198,19 @@ function dataURLtoFile(dataUrl, filename) {
 					fileList.children('tbody').remove();
 				});
 
-
 				/*================================================================================*\
 				Table with the list of files and their details
 				\*================================================================================*/
 			    var fileList=$('<table class="ax-file-list" />').append('<thead><tr>'+
+														'<th>New Filename</th>'+
 													 	'<th>File</th>'+
-													 	'<th>Size</th>'+
+													 	'<th>&nbsp;&nbsp;&nbsp;&nbsp;Size&nbsp;&nbsp;&nbsp;&nbsp;</th>'+
 													 	'<th>Progress</th>'+
 													 	'<th>Remove</th>'+
 													 	'<th>Upload</th>'+
 													 '</tr></thead>').appendTo(mainForm);
 
+				
 				/*================================================================================*\
 				Functions that sets the url for sending additional data
 				\*================================================================================*/
@@ -245,6 +232,7 @@ function dataURLtoFile(dataUrl, filename) {
 					return url+'&ax-file-name='+enc_name+'&'+settings.data;//final url with other data
 			    }
 
+				
 				/*================================================================================*\
 				Functions that executes and the end of file uploading
 				\*================================================================================*/
@@ -265,6 +253,7 @@ function dataURLtoFile(dataUrl, filename) {
 						uploadAll.attr('disabled',false);
 					}
 			    }
+				
 
 				/*================================================================================*\
 				Functions creates file form and xmlhttprequest for upload
@@ -288,7 +277,6 @@ function dataURLtoFile(dataUrl, filename) {
 					}
 					s=(Math.round(s*100)/100)+' '+settings.showSize;
 
-
 					fileCount++;//update file number
 					totalFiles++;
 
@@ -302,16 +290,17 @@ function dataURLtoFile(dataUrl, filename) {
 					});
 
 					//prepare abort and upload button
-					var up=$('<input type="button" value="Upload" class="ax-upload" id="ax-upload"' + fileCount +'" />').bind('click',function(){ this.disabled=true; });
-
+					var up=$('<input type="button" value="Upload" class="ax-upload" />').bind('click',function(){ this.disabled=true; });
 					var tr=$('<tr />').appendTo(t);
+					var fileSequence = fileCount + 1;
+					var rename=$('<input class="new-file-name'+fileSequence+'" value="'+n+'" />').appendTo(tr);
 					var td_n=$('<td class="ax-file-name" title="'+n+'" />').appendTo(tr).html(n);
 					var td_s=$('<td class="ax-size-td" />').appendTo(tr).html(s);
 					var td_p=$('<td class="ax-progress-td" />').appendTo(tr);
 					var div_p=$('<div  class="ax-progress-div" />').css({'width':'0%','background-color':'red'}).html(0).appendTo(td_p);
 					var td_r=$('<td class="ax-remove-td" />').appendTo(tr).append(rm);
 					var td_u=$('<td class="ax-upload-td" />').appendTo(tr).append(up);
-
+					
 					/*================================================================================*\
 					 Prepare to send
 					\*================================================================================*/
@@ -348,73 +337,76 @@ function dataURLtoFile(dataUrl, filename) {
 						 bind actions to buttons
 						\*================================================================================*/
 						up.bind('click',function(){
-							uploadFileXhr(o,0,$(this),div_p);
+							uploadFileXhr(o,0,$(this),div_p, fileSequence);
 						});
 					}
 				}
 				
 				
-	function uploadFileXhr(o, start_byte, up, div_p) {
-    var totals = o.size;
-    var chunk;
-    var peice = settings.chunkSize; //bytes to upload at once
+				/*================================================================================*\
+				 uploadFileXhr function
+				\*================================================================================*/
+				function uploadFileXhr(o, start_byte, up, div_p, fileSequence) {
+				var totals = o.size;
+				var chunk;
+				var peice = settings.chunkSize; //bytes to upload at once
 
-    var end_byte = start_byte + peice;
-    var peice_count = end_byte / peice;
-    var is_last = (totals - end_byte <= 0) ? 1 : 0;
+				var end_byte = start_byte + peice;
+				var peice_count = end_byte / peice;
+				var is_last = (totals - end_byte <= 0) ? 1 : 0;
 
-    /*===============================================================*\
-     * Detect support slice method
-     * if slice is not supported then send all file at once
-     \*==============================================================*/
+				/*===============================================================*\
+				 * Detect support slice method
+				 * if slice is not supported then send all file at once
+				 \*==============================================================*/
 
-    // Initialize a new FileReader object
-    var reader = new FileReader();
+				// Initialize a new FileReader object
+				var reader = new FileReader();
 
-    // Slice the file into the desired chunk
-    var chunk = o.slice(start_byte, end_byte);
-    reader.readAsBinaryString(chunk);
+				// Slice the file into the desired chunk
+				var chunk = o.slice(start_byte, end_byte);
+				reader.readAsBinaryString(chunk);
 
-    /*================================================================================*\
-     Prepare xmlhttpreq object for file upload Bind functions and progress
-     \*================================================================================*/
-    var xhr = new XMLHttpRequest(); // prepare xhr for upload
+				/*================================================================================*\
+				 Prepare xmlhttpreq object for file upload Bind functions and progress
+				 \*================================================================================*/
+				var xhr = new XMLHttpRequest(); // prepare xhr for upload
+				xhr.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						if (is_last == 0) {
+							uploadFileXhr(o, end_byte, up, div_p, fileSequence);
+						} else {
+							onFinish(xhr.responseText,o.name,up);
+							div_p.html('100%').css('width', '100%');
+						}
+					}
+				};
+				xhr.upload.onprogress = function(e) {
+					if (e.lengthComputable) {
+						var perc = Math.round((e.loaded + peice_count * peice - peice) * 100 / totals);
+						div_p.html(perc + '%').css('width', perc + '%');
+					}
+				};
 
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            if (is_last == 0) {
-                uploadFileXhr(o, end_byte, up, div_p);
-            } else {
-                onFinish(xhr.responseText,o.name,up);
-                div_p.html('100%').css('width', '100%');
-            }
-        }
-    };
-    xhr.upload.onprogress = function(e) {
-        if (e.lengthComputable) {
-            var perc = Math.round((e.loaded + peice_count * peice - peice) * 100 / totals);
-            div_p.html(perc + '%').css('width', perc + '%');
-        }
-    };
+				xhr.upload.onerror = settings.error(xhr.responseText, o.name);
+				// before rename
+				//var finalUrl=get_final_url(encodeURIComponent(o.name));
+				// after rename, add input variable fileSequence
+				var newFileName = $('.new-file-name'+fileSequence).val();
+				var finalUrl=get_final_url(encodeURIComponent(newFileName));
+				xhr.open('POST', finalUrl + '&start=' + start_byte, settings.async); // url + async/sync
+				xhr.setRequestHeader('Cache-Control', 'no-cache');
+				xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // header
+				// have to use json utf-8 charset
+				xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+				xhr.send(chunk); // send request of file
+			}
 
-    xhr.upload.onerror = settings.error(xhr.responseText, o.name);
-    var finalUrl=get_final_url(encodeURIComponent(o.name));
-    xhr.open('POST', finalUrl + '&start=' + start_byte, settings.async); // url + async/sync
-    xhr.setRequestHeader('Cache-Control', 'no-cache');
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // header
-    // have to use json utf-8 charset
-    xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-    xhr.send(chunk); // send request of file
-}
-
-// ends hr
-
-				/*=======================================================
-				 * Disable option
-				 *======================================================*/
-	    	    if(!settings.enable)
-	    	    	$(this).find('input:not(:disabled), button:not(:disabled)').addClass('ax-disabled').attr('disabled',true);
-
+			/*=======================================================
+			 * Disable option
+			 *======================================================*/
+			if(!settings.enable)
+				$(this).find('input:not(:disabled), button:not(:disabled)').addClass('ax-disabled').attr('disabled',true);
     	    });
 		},
 		enable:function()

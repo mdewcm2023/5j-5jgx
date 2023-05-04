@@ -21,7 +21,11 @@
 <v t="leo.20220924163559.1"><vh>config/config 問題</vh></v>
 </v>
 <v t="leo.20221017090940.1"><vh>202210 修改</vh></v>
-<v t="leo.20230426230937.1"><vh>202304 修改</vh></v>
+<v t="leo.20230426230937.1"><vh>202304 修改</vh>
+<v t="leo.20230503195856.1"><vh>axuploader.js 架構</vh></v>
+<v t="leo.20230502141651.1"><vh>新增 client rename</vh></v>
+<v t="leo.20230503141342.1"><vh>alert file names</vh></v>
+</v>
 </v>
 <v t="leo.20190515144242.1"><vh>@clean wsgi.py</vh>
 <v t="leo.20190515144254.1"><vh>Declarations (wsgi.py)</vh></v>
@@ -1283,7 +1287,7 @@ def imageuploadform(edit):
         directory = render_menu(head, level, page)
         return set_css() + "&lt;div class='container'&gt;&lt;nav&gt;" + \
                  directory + "&lt;/nav&gt;&lt;section&gt;&lt;h1&gt;image files upload&lt;/h1&gt;" + '''
-&lt;script src="/static/jquery-1.7.js" type="text/javascript"&gt;&lt;/script&gt;
+&lt;script src="/static/jquery.js" type="text/javascript"&gt;&lt;/script&gt;
 &lt;script src="/static/axuploader.js" type="text/javascript"&gt;&lt;/script&gt;
 &lt;script&gt;
 $(document).ready(function(){
@@ -3581,35 +3585,152 @@ def doAcp():
 </t>
 <t tx="leo.20230426230937.1">add the resizeImage() to axuploader.js
 
+/*================================================================================*\
+ Add the resizeImage() before call add_file()
+\*================================================================================*/
 function resizeImage(file, maxWidth, callback) {
-    var reader = new FileReader();
-    reader.onload = function(event) {
-        var img = new Image();
-        img.onload = function() {
-            var canvas = document.createElement('canvas');
-            var ctx = canvas.getContext('2d');
-            var ratio = Math.min(maxWidth / img.width);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob(callback);
-        }
-        img.src = event.target.result;
-    }
-    reader.readAsDataURL(file);
+  // Create a new FileReader object
+  const reader = new FileReader();
+  // Add an event listener to the FileReader object that listens for when the file is loaded
+  reader.addEventListener("load", () =&gt; {
+    // Create a new image object
+    const img = new Image();
+      // Add an event listener to the image object that listens for when the image is loaded
+      img.addEventListener("load", () =&gt; {
+      var ratio = Math.min(maxWidth / img.width);
+      // Create a new canvas object
+      const canvas = document.createElement("canvas");
+
+      // Set the canvas width and height to the new width and height of the image
+	  canvas.width = img.width * ratio;
+	  canvas.height = img.height * ratio;
+
+      // Draw the image onto the canvas with the new width and height
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Convert the canvas to a data URL
+      const dataUrl = canvas.toDataURL("image/jpeg");
+
+      // Create a new file object from the data URL
+      const resizedFile = dataURLtoFile(dataUrl, file.name);
+
+      // Return the resized file
+      callback(resizedFile);
+    });
+
+    // Set the source of the image object to the data URL of the file
+    img.src = reader.result;
+  });
+
+  // Read the file as a data URL
+  reader.readAsDataURL(file);
 }
 
-and starts at line 103 of axuploader.js, reduce the image file size and add_file, but the server can not get the upload file name.
 
-var file = this.files[i];
-resizeImage(file, 600, function(resizedImageBlob){
-//add_file(fileList,this.files[i],this.files[i].name,this.files[i].size,fileCount);
-var fileName = file.name;
-var fileSize = resizedImageBlob.size;
-//console.log(fileName);
-//console.log(fileSize);
-add_file(fileList,resizedImageBlob,fileName,fileSize,fileCount);
-});</t>
+/*================================================================================*\
+ Function to convert a data URL to a file object
+\*================================================================================*/
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}
+</t>
+<t tx="leo.20230502141651.1">1)
+    var fileSequence = fileCount + 1;
+    var rename=$('&lt;input class="new-file-name'+fileSequence+'" value="'+n+'" /&gt;').appendTo(tr);
+
+This line of code creates a new table cell element (&lt;td&gt;) with a class of ax-file-name and a title attribute set to the value of the n variable. It then appends the newly created table cell to a table row (&lt;tr&gt;) and sets its HTML content to the value of the n variable.
+
+In other words, this code creates a new cell in a table row, sets the cell's class to ax-file-name, sets the title attribute of the cell to the value of the n variable, and sets the HTML content of the cell to the same value as the title attribute. The resulting cell will display the file name with a tooltip displaying the full file name if it is too long to fit within the cell.
+
+2)
+The get_final_url() function is used to construct the final URL that will be used to upload the file. The function first encodes the remote path and calculates it if it is given as a function. It then sets other URL data, such as the allowExt parameter and any data specified in the settings object. Finally, it constructs the final URL by appending the encoded file name and any data specified in the settings object.
+
+The resulting URL is then used in the AJAX request to upload the file. The request method is specified as POST, not GET, which means that the file data is sent in the request body, not as part of the URL.
+
+3)
+It is possible to allow the user to specify the new file name when they click the upload button. Here is a general approach you could take:
+
+    1. Add an input element to your HTML form where the user can enter the new file name.
+    2. When the user clicks the upload button, retrieve the value of the input element and use it as the new file name.
+    3. Pass the new file name to the server-side code that handles the file upload, along with the uploaded file content.
+    4. Update any references to the file name in your database or other data store, if necessary.
+
+To implement this functionality using a third-party library like jQuery AXuploader.js, you would need to modify the client-side code to retrieve the new file name from the input element and pass it to the server-side code along with the uploaded file content. You would also need to modify the server-side code to handle the new file name and save the file to the server with the new name.</t>
+<t tx="leo.20230503141342.1">因為 finish 定義在 axuploader.js 呼叫之後的 Javascript 程式碼中,
+
+因此在 axuploader.js 呼叫 onFinish
+
+onFinish is a function that is defined in the plugin code that gets called when the upload of a single file has finished.
+
+On the other hand, finish is a user-defined callback function that is passed as an option to the plugin when it is initialized. This function is called when all the files have finished uploading.
+
+The onFinish function is called for each file, while the finish function is called only once when all the files have been uploaded.
+
+The input parameter of the finish callback function is specified by the plugin user when they initialize the plugin.
+
+In the example code you provided earlier, the finish callback function is defined with two input parameters, x and files:
+
+When the plugin finishes uploading all the files, it calls the finish function with the upload response x and an array files containing the names of all the files that were uploaded. The x parameter is a string containing the server's response to the upload request. The files parameter is an array of strings, where each string is the name of a file that was uploaded.
+
+The files parameter in the finish function comes from the filesArr array that is populated with the file names in the onFinish function.
+
+Here is the relevant code from onFinish:
+
+    var filesArr=new Array();
+    $(_this).find('.ax-file-name').each(function(){
+        filesArr.push($(this).attr('title'));
+    });
+    ...
+    settings.finish(txt,filesArr);
+
+In this code, filesArr is populated by looping through all the elements with the class .ax-file-name (which correspond to the uploaded files) and pushing their title attribute (which contains the file name) into the filesArr array. Then, the finish function is called with the txt parameter (the response text from the server) and the filesArr array as its input parameters.
+
+To make .ax-file-name show the renamed file name instead of the original file name, you need to modify the code that creates the HTML element for this field.
+
+Currently, the following code is used to create .ax-file-name field:
+
+    var td_n=$('&lt;td class="ax-file-name" title="'+n+'" /&gt;').appendTo(tr).html(n);
+
+This code creates a td element with a class ax-file-name and sets its title attribute to the original file name (n). It then sets the inner HTML of this element to the original file name (n).
+
+To show the renamed file name instead, you can modify the code as follows:
+
+    var renamedFileName = rename.val(); // get the renamed file name
+    var td_n=$('&lt;td class="ax-file-name" title="'+renamedFileName+'" /&gt;').appendTo(tr).html(renamedFileName);
+    
+This code creates a td element with a class ax-file-name and sets its title attribute to the renamed file name. It then sets the inner HTML of this element to the renamed file name. Note that the renamed file name is obtained from the rename input field using its val() method.
+</t>
+<t tx="leo.20230503195856.1">(function($)
+{
+	var methods =
+	{
+		init : function(options)
+		{
+        
+To define a method called init as part of an object called methods. The method takes an optional options parameter and is likely intended to be used as a plugin or module within a larger JavaScript application.
+
+The code also includes an anonymous function that takes a single parameter, $. This parameter is likely a reference to the jQuery library, which is a popular JavaScript library that simplifies many common tasks such as DOM manipulation, event handling, and AJAX requests.
+
+The code is wrapped in a self-executing function, which is a common technique used to avoid naming collisions and to ensure that variables defined within the function do not pollute the global namespace. By passing the $ parameter to the function, the code is able to use the jQuery library within its own scope without interfering with other code that may be using the same library.
+
+The code appears to be structured as a plugin or module because it defines a method (init) as part of an object (methods). In JavaScript, plugins or modules are often used to encapsulate functionality and make it reusable across multiple parts of an application.
+
+By defining functionality as a plugin or module, it can be easily imported and used within other parts of an application, without having to rewrite the code every time it is needed. This helps to improve code organization, reduce duplication, and simplify maintenance and updates.
+
+Additionally, the fact that the code takes an options parameter suggests that it is intended to be configurable and customizable, which is another common characteristic of plugins or modules. This allows developers to easily tweak the behavior of the code to fit their specific needs, without having to modify the underlying code directly.
+
+The AXuploader.js script follows a plugin design pattern for jQuery. It defines a set of methods that can be called on a jQuery object that has been initialized as an AXuploader instance. These methods include "init", which initializes the AXuploader instance, "enable" and "disable", which respectively enable and disable the uploader, "start", which begins the upload process, "clear", which clears the uploaded files, and "destroy", which removes the AXuploader instance from the DOM. 
+
+At the end of the script, there is a block of code that uses the jQuery "fn" namespace to extend the jQuery object with the AXuploader plugin. It defines a function that takes a "method" parameter and an "options" parameter, and checks if the specified method exists in the "methods" object. If the method exists, it is executed with the given arguments. If the method does not exist, but the parameter is an object or not specified, then the "init" method is called with the given arguments. Finally, if the method is not recognized, an error message is displayed. This allows for flexible usage of the plugin and easy integration with other jQuery code.</t>
 <t tx="yen.20200710111924.1">def checkMath():
 
     """Use LaTeX Equation rendering
