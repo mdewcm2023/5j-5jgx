@@ -305,7 +305,43 @@ axios.get('https://api.example.com/data')
 <p>單機場景加上計分<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) 60</p>
 <p>修改標題, 加入學員 github 帳號, 以及 w11 下的學員網頁      </p>
 <p><a href="https://mdecd2023.github.io/2b2-pj2bg1">pj2bg1</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg1">repo</a>) X 41023246<br/><a href="https://mdecd2023.github.io/2b2-pj2bg2">pj2bg2</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg2">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg3">pj2bg3</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg3">repo</a>) 41023252, 41023211<br/><a href="https://mdecd2023.github.io/2b2-pj2bg4">pj2bg4</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg4">repo</a>) X 41023201<br/><a href="https://mdecd2023.github.io/2b2-pj2bg5">pj2bg5</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg5">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg6">pj2bg6</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg6">repo</a>) 41023226, 41023220 網頁標題未改, 41023233<br/><a href="https://mdecd2023.github.io/2b2-pj2bg7">pj2bg7</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg7">repo</a>) 41023228 網頁標題未改 41023219, 41023221<br/><a href="https://mdecd2023.github.io/2b2-pj2bg8">pj2bg8</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg8">repo</a>) X 41023242<br/><a href="https://mdecd2023.github.io/2b2-pj2bg9">pj2bg9</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg9">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg10">pj2bg10</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg10">repo</a>) 41023241 無學員 github 帳號<br/><a href="https://mdecd2023.github.io/2b2-pj2bg11">pj2bg11</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg11">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg12">pj2bg12</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg12">repo</a>) 41023251, 41023234 網頁標題未改<br/><a href="https://mdecd2023.github.io/2b2-pj2bg13">pj2bg13</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg13">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg15">pj2bg15</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg15">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg16">pj2bg16</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg16">repo</a>) X</p>
-<h1>Git</h1>
+<h2>wss</h2>
+<p><a href="https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/">https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/</a></p>
+<p><a href="https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel">https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel</a></p>
+<p><a href="https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel">https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel</a></p>
+<p>simAddOnVisualization stream.lua </p>
+<p>\3rdparty\coppelia-ws-remote-api\RemoteAPIClient.js</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">; Certificate/key is needed in server mode and optional in client mode
+cert = /path/to/&lt;myCert&gt;.pem
+key = /path/to/&lt;myKey&gt;.key
+
+; Protocol version (all, SSLv2, SSLv3, TLSv1)
+sslVersion = all
+
+; Some security enhancements for UNIX systems - comment them out on Win32
+chroot = /var/run/stunnel/
+
+; PID is created inside the chroot jail
+pid = /stunnel.pid
+
+; Some performance tunings
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+;compression = zlib
+
+; Some debugging stuff useful for troubleshooting
+debug = 7
+output = /var/log/stunnel/stunnel.log
+;foreground = yes
+
+; Use it for client mode
+;client = yes                     !! turn to server mode
+
+; Service-level configuration
+[wsServer]
+accept = 0.0.0.0:9030             !! listen to all addresses
+connect = 127.0.0.1:9090</pre>
+<p></p><h1>Git</h1>
 <p>fatal:  Could not resolve host: github.com</p>
 <p>發生原因: 目前的網路設定無法與 github.com 網站連線</p>
 <p>解決方法:</p>
