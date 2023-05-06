@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H1">
+<meta property="head" content="H2">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -141,22 +141,128 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">ax5 << <a href='ax5.html'>Previous</a> <a href='w11.html'>Next</a> >> w11<br /><h1>Games</h1>
-<p>Learn Python and Javascript:</p>
-<p style="padding-left: 30px;">Python:</p>
-<p style="padding-left: 60px;"><a href="./../downloads/python_beginners.pdf">python_beginners.pdf</a></p>
-<p style="padding-left: 60px;"><a href="file:///C:/Users/admin/Downloads/978-1-4842-7058-5.pdf">Programming Microcontrollers with Python</a> (2021) (必須使用校園網路(Proxy or VPN) 才能下載)</p>
-<p style="padding-left: 60px;"><a href="file:///C:/Users/admin/Downloads/978-1-4302-6425-5.pdf">Learn Raspberry Pi Programming with Python</a> (2014) (必須使用校園網路(Proxy or VPN) 才能下載)</p>
-<p style="padding-left: 30px;">Javascript:</p>
-<p style="padding-left: 60px;"><a href="file:///C:/Users/admin/Downloads/978-1-4842-7377-7-2.pdf">Build Your Own 2D Game Engine and Create Great Web Games</a> (2022) (必須使用校園網路(Proxy or VPN) 才能下載)</p>
-<p>Brython: <a href="https://brython.info/">https://brython.info/</a></p>
-<p style="padding-left: 30px;"><a href="https://brython.info/gallery/bricks_py.html">https://brython.info/gallery/bricks_py.html</a></p>
-<p style="padding-left: 30px;"><a href="https://brython.info/gallery/3Dwalker.html">https://brython.info/gallery/3Dwalker.html</a></p>
-<p style="padding-left: 30px;"><a href="https://bmsleight.github.io/brython-blocks/">https://bmsleight.github.io/brython-blocks/</a></p>
-<p style="padding-left: 30px;"><a href="https://brython.info/gallery/taquin.html">https://brython.info/gallery/taquin.html</a></p>
-<p><a href="https://github.com/BrythonServer/ggame">https://github.com/BrythonServer/ggame</a></p>
-<p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p>
-<br />ax5 << <a href='ax5.html'>Previous</a> <a href='w11.html'>Next</a> >> w11</div>
+    <div id="tipue_search_content">wss << <a href='wss.html'>Previous</a> <a href='Git.html'>Next</a> >> Git<br /><h1>Visualization</h1>
+<p>simExtWS 要先執行.</p>
+<p>SimAddonVisualization stream.lua 按下下拉式功能表之後顯示 running</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_info()
+    autoStart=sim.getNamedBoolParam('visualizationStream.autoStart')
+    if autoStart==nil then autoStart=false end
+    return {autoStart=autoStart,menu='Connectivity\nVisualization stream'}
+end
+
+function sysCall_init()
+    resourcesDir=sim.getStringParameter(sim.stringparam_resourcesdir)
+
+    if not simWS then
+        sim.addLog(sim.verbosity_errors,'the WS plugin is not available')
+        return {cmd='cleanup'}
+    end
+
+    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+    if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
+        while true do
+            local r,e=pcall(function() wsServer=simWS.start(wsPort) end)
+            if r then break end
+            sim.addLog(sim.verbosity_scriptwarnings,'WS failed to start ('..e..'). Retrying...')
+            sim.wait(0.5,false)
+        end
+    else
+        wsServer=simWS.start(wsPort)
+    end
+    simWS.setOpenHandler(wsServer,'onWSOpen')
+    simWS.setCloseHandler(wsServer,'onWSClose')
+    simWS.setMessageHandler(wsServer,'onWSMessage')
+    simWS.setHTTPHandler(wsServer,'onWSHTTP')
+    wsClients={}
+
+    cbor=require('org.conman.cbor')
+    base64=require('base64')
+    url=require('socket.url')
+
+    sim.test('sim.mergeEvents',true)
+    sim.test('sim.cborEvents',true)
+
+    sim.addLog(sim.verbosity_scriptinfos,'e.g. in your local web browser, type: http://127.0.0.1:'..tostring(wsPort))
+end
+
+function sysCall_addOnScriptSuspend()
+    return {cmd='cleanup'}
+end
+
+function sysCall_event(data)
+    sendEventRaw(data)
+end
+
+function sysCall_cleanup()
+    if wsServer then
+        simWS.stop(wsServer)
+    end
+end
+
+function getFileContents(path)
+    local f,err,errno=io.open(path,"rb")
+    if f then
+        local content=f:read("*all")
+        f:close()
+        return 200,content
+    else
+        return 404,nil
+    end
+end
+
+function onWSOpen(server,connection)
+    if server==wsServer then
+        wsClients[connection]=1
+        sendEventRaw(sim.getGenesisEvents(),connection)
+    end
+end
+
+function onWSClose(server,connection)
+    if server==wsServer then
+        wsClients[connection]=nil
+    end
+end
+
+function onWSMessage(server,connection,message)
+end
+
+function onWSHTTP(server,connection,resource,data)
+    resource=url.unescape(resource)
+    local mainPage='threejsFrontend'
+    local status,data=404,nil
+    if resource=='/' or resource=='/'..mainPage..'.html' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.html')
+        if status==200 then
+            data=string.gsub(data,'const wsPort = 23020;','const wsPort = '..wsPort..';')
+        end
+    elseif resource=='/'..mainPage..'.js' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.js')
+    elseif resource:sub(1,10)=='/3rdparty/' then
+        status,data=getFileContents(resourcesDir..resource)
+    end
+    if status==404 and resource~='/favicon.ico' then
+        sim.addLog(sim.verbosity_errors,'resource not found: '..resource)
+    end
+    return status,data
+end
+
+function sendEventRaw(d,conn)
+    if d==nil then return end
+
+    if wsServer then
+        for connection,_ in pairs(wsClients) do
+            if conn==nil or conn==connection then
+                simWS.send(wsServer,connection,d,simWS.opcode.binary)
+            end
+        end
+    end
+end
+
+function verbose()
+    return sim.getNamedInt32Param('visualizationStream.verbose') or 0
+end
+</pre><br />wss << <a href='wss.html'>Previous</a> <a href='Git.html'>Next</a> >> Git</div>
         
     <!-- footer -->
       <div class="container">
