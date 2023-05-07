@@ -141,23 +141,217 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content"> <a href='精密機械.html'>Next</a> >> 精密機械<br /><h1>About</h1>
-<p>Repo: <a href="https://github.com/mdewcm2023/5j-5jgx">https://github.com/mdewcm2023/5j-5jgx</a></p>
-<p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
-<p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
-<p>on cad2 account jgx: <a href="http://cad2.cycu.org/~jgx/5jgx">http://cad2.cycu.org/~jgx/5jgx</a></p>
-<p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR" style="font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #ffffff;">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
-<p>on cad2: <a>https://cad2.cycu.org:8001</a> from hupper -m server.py</p>
-<p>ssh-keygen: <a href="https://mde.tw/blog/2022_fall_courses_w10.html">https://mde.tw/blog/2022_fall_courses_w10.html</a></p>
-<p>sudo apt install ncat</p>
-<p>SSH setup:</p>
-<p>.ssh/config</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">Host github.com
-User git
-Hostname github.com
-ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre>
-<p>need to chmod u+x ./acp</p>
-<p></p><br /> <a href='精密機械.html'>Next</a> >> 精密機械</div>
+    <div id="tipue_search_content">cmsimde << <a href='cmsimde.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>Coppeliasim</h1>
+<p>Under simExtWS.dll</p>
+<p>Websocket server in lua:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function onMessage(server,connection,data)
+    print('received:',data)
+    data='Hello there'
+    print('sending:',data)
+    simWS.send(server,connection,data)
+end
+
+function sysCall_init()
+    server=simWS.start(9000)
+    simWS.setMessageHandler(server,'onMessage')
+end</pre>
+<p>echo client in python</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import asyncio
+import websockets
+
+async def hello():
+    async with websockets.connect("ws://localhost:9000") as websocket:
+        payload = 'Hello, world!'
+        print('Sending:', payload)
+        await websocket.send(payload)
+        payload = await websocket.recv()
+        print('Received:', payload)
+
+asyncio.run(hello())
+</pre>
+<p>broadcasting server in lua:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function onOpen(server,connection)
+    clients[server]=clients[server] or {}
+    clients[server][connection]=1
+end
+
+function onClose(server,connection)
+    clients[server][connection]=nil
+end
+
+function broadcast(data)
+    for server,connections in pairs(clients) do
+        for connection,_ in pairs(connections) do
+            simWS.send(server,connection,data)
+        end
+    end
+end
+
+function sysCall_init()
+    clients={}
+    server=simWS.start(9000)
+    simWS.setOpenHandler(server,'onOpen')
+    simWS.setCloseHandler(server,'onClose')
+end
+
+function sysCall_sensing()
+    local t=sim.getSimulationTime()
+    if lastBroadcastTime and (t-lastBroadcastTime)&lt;1 then return end
+    lastBroadcastTime=t
+    i=(i or 0)+1
+    broadcast('#'..i)
+end</pre>
+<p>broadcasting client in python:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import asyncio
+import websockets
+
+async def main():
+    async with websockets.connect("ws://localhost:9000") as websocket:
+        while True:
+            payload = await websocket.recv()
+            print('Received:', payload)
+
+asyncio.run(main())
+</pre>
+<p>http get server in lua:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function onHTTP(server,connection,resource,data)
+    if resource=='/' then
+        local ua=sim.getStringNamedParam('simWS.userAgent')
+        return 200,'&lt;html&gt;&lt;body&gt;&lt;h1&gt;Index&lt;/h1&gt;&lt;hr/&gt;&lt;p&gt;'..ua..'&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;'
+    end
+end
+
+function sysCall_init()
+    clients={}
+    server=simWS.start(9000)
+    simWS.setHTTPHandler(server,'onHTTP')
+end
+</pre>
+<p>Use browser <a href="http://localhost:9000">http://localhost:9000</a></p>
+<hr/>
+<p>simAddOnVisualization stream.lua</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_info()
+    autoStart=sim.getNamedBoolParam('visualizationStream.autoStart')
+    if autoStart==nil then autoStart=false end
+    return {autoStart=autoStart,menu='Connectivity\nVisualization stream'}
+end
+
+function sysCall_init()
+    resourcesDir=sim.getStringParameter(sim.stringparam_resourcesdir)
+
+    if not simWS then
+        sim.addLog(sim.verbosity_errors,'the WS plugin is not available')
+        return {cmd='cleanup'}
+    end
+
+    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+    if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
+        while true do
+            local r,e=pcall(function() wsServer=simWS.start(wsPort) end)
+            if r then break end
+            sim.addLog(sim.verbosity_scriptwarnings,'WS failed to start ('..e..'). Retrying...')
+            sim.wait(0.5,false)
+        end
+    else
+        wsServer=simWS.start(wsPort)
+    end
+    simWS.setOpenHandler(wsServer,'onWSOpen')
+    simWS.setCloseHandler(wsServer,'onWSClose')
+    simWS.setMessageHandler(wsServer,'onWSMessage')
+    simWS.setHTTPHandler(wsServer,'onWSHTTP')
+    wsClients={}
+
+    cbor=require('org.conman.cbor')
+    base64=require('base64')
+    url=require('socket.url')
+
+    sim.test('sim.mergeEvents',true)
+    sim.test('sim.cborEvents',true)
+
+    sim.addLog(sim.verbosity_scriptinfos,'e.g. in your local web browser, type: http://127.0.0.1:'..tostring(wsPort))
+end
+
+function sysCall_addOnScriptSuspend()
+    return {cmd='cleanup'}
+end
+
+function sysCall_event(data)
+    sendEventRaw(data)
+end
+
+function sysCall_cleanup()
+    if wsServer then
+        simWS.stop(wsServer)
+    end
+end
+
+function getFileContents(path)
+    local f,err,errno=io.open(path,"rb")
+    if f then
+        local content=f:read("*all")
+        f:close()
+        return 200,content
+    else
+        return 404,nil
+    end
+end
+
+function onWSOpen(server,connection)
+    if server==wsServer then
+        wsClients[connection]=1
+        sendEventRaw(sim.getGenesisEvents(),connection)
+    end
+end
+
+function onWSClose(server,connection)
+    if server==wsServer then
+        wsClients[connection]=nil
+    end
+end
+
+function onWSMessage(server,connection,message)
+end
+
+function onWSHTTP(server,connection,resource,data)
+    resource=url.unescape(resource)
+    local mainPage='threejsFrontend'
+    local status,data=404,nil
+    if resource=='/' or resource=='/'..mainPage..'.html' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.html')
+        if status==200 then
+            data=string.gsub(data,'const wsPort = 23020;','const wsPort = '..wsPort..';')
+        end
+    elseif resource=='/'..mainPage..'.js' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.js')
+    elseif resource:sub(1,10)=='/3rdparty/' then
+        status,data=getFileContents(resourcesDir..resource)
+    end
+    if status==404 and resource~='/favicon.ico' then
+        sim.addLog(sim.verbosity_errors,'resource not found: '..resource)
+    end
+    return status,data
+end
+
+function sendEventRaw(d,conn)
+    if d==nil then return end
+
+    if wsServer then
+        for connection,_ in pairs(wsClients) do
+            if conn==nil or conn==connection then
+                simWS.send(wsServer,connection,d,simWS.opcode.binary)
+            end
+        end
+    end
+end
+
+function verbose()
+    return sim.getNamedInt32Param('visualizationStream.verbose') or 0
+end
+</pre>
+<p>threejsFrontend.js</p>
+<p></p>
+<p></p><br />cmsimde << <a href='cmsimde.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
         
     <!-- footer -->
       <div class="container">
