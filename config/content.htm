@@ -1,4 +1,5 @@
 <h1>About</h1>
+<p>2009 年啟用的電腦配置 8GB 安裝 Ubuntu 22.04 操作系統, 以 Nginx 伺服靜態系統, 以 wsgi 伺服動態系統.</p>
 <p>Repo: <a href="https://github.com/mdewcm2023/5j-5jgx">https://github.com/mdewcm2023/5j-5jgx</a></p>
 <p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
 <p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
@@ -32,13 +33,13 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>Virtualbox: <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EV5lw40RXvNFue1Cr2sivioBuOj_QA5KzAxDMU0Mkf7z8w?e=NtOJeN">wcm_portable_w2-5.7z</a> (下載 220MB 解開後 880MB)</p>
 <h2>OBS</h2>
+<p>由於 OBS 會將 setting 存入 AppData 目錄, 因此要在隨身碟中保有先前的設定, 必須透過可攜系統的 command 啟動 obs.</p>
 <p>議題: 如何設定鍵盤快捷鍵, 讓啟動與關閉錄影過程不會顯示在錄製的影片中.</p>
 <p>議題: 手機可以做為 OBS 的一個 camera 來源嗎?</p>
 <p>議題: OBS 可以透過 Youtube 或其他雲端網站進行 live streaming (現場串流直播)</p>
 <p>利用程式控制 OBS:</p>
 <p style="padding-left: 30px;"><a href="https://docs.obsproject.com/scripting">https://docs.obsproject.com/scripting</a></p>
-<p></p>
-<h1>Upload</h1>
+<p></p><h1>Upload</h1>
 <p><img alt="" height="300" src="/images/網際內容管理五月五日留念.jpg" width="400"/></p>
 <p><img alt="" height="711" src="/images/托福考試.png" width="400"/></p>
 <p></p>
@@ -642,6 +643,8 @@ def upload():
 });
 </pre>
 <h1>Coppeliasim</h1>
+<p>希望能在 https 與 wss 協定下啟動 Visualization Stream 功能</p>
+<p>由於 Coppeliasim 4.5.1 會將 usrset.txt 存入 AppData, 且只能使用 C:\users 對應的帳號下 AppData, 因此使用隨身碟中的系統, 必須動用 xcopy 將存於隨身碟的相關設定寫入 C:\ 對應區域, 才可使用滑鼠點擊開啟 CoppeliaSim, 但若以 Command 啟動 CoppeliaSim, 則部分的 plugin 無法存取, 例如: code editor plugin.</p>
 <p>Under simExtWS.dll</p>
 <p>Websocket server in lua:</p>
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function onMessage(server,connection,data)
