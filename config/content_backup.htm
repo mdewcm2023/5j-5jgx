@@ -26,9 +26,12 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>TOEIC 代表 "Test of English for International Communication"，翻譯成中文是「國際英語溝通測驗」。</p>
 <p>TOEIC 包含兩種題型：單選題和填充題。其中，閱讀部分是以單選題為主，聽力部分則是以填充題和單選題結合的形式出現。閱讀部分的單選題是選出最適合或最相符的答案，填充題是根據題目要求填入適當的單詞或短語。聽力部分的填充題是根據所聽到的對話或短文內容填空，單選題是選出最適合或最相符的答案。</p>
 <p>TOEIC 的選擇題不會有倒扣，也就是說，考生選擇了錯誤的答案不會扣除分數。每個題目都有唯一正確的答案，考生選擇了正確的答案可以得到相應的分數，選擇了錯誤的答案則不會得分。因此，建議考生如果對一道題目不確定答案，也可以根據猜測選擇一個選項，以增加得分的機會。</p>
+<h2>nginx</h2>
+<p>設定 public_html</p>
+<p><a href="https://www.server-world.info/en/note?os=Ubuntu_20.04&amp;p=nginx&amp;f=4">https://www.server-world.info/en/note?os=Ubuntu_20.04&amp;p=nginx&amp;f=4</a></p>
+<p>外部 711, public_html 755</p>
 <p></p>
-<p></p>
-<h1>Downloads</h1>
+<p></p><h1>Downloads</h1>
 <p>OBS: <a href="https://obsproject.com/download">https://obsproject.com/download</a></p>
 <p>Virtualbox: <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EV5lw40RXvNFue1Cr2sivioBuOj_QA5KzAxDMU0Mkf7z8w?e=NtOJeN">wcm_portable_w2-5.7z</a> (下載 220MB 解開後 880MB)</p>
@@ -464,6 +467,7 @@ function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
 </pre><h2>Git</h2>
+<p>測試在 acp 中加入 public_html 目錄中倉儲的 git pull 指令執行</p>
 <p>fatal:  Could not resolve host: github.com</p>
 <p>發生原因: 目前的網路設定無法與 github.com 網站連線</p>
 <p>解決方法:</p>
