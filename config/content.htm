@@ -25,6 +25,7 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p></p><h2>精密機械</h2>
 <p><a href="https://github.com/KmolYuan">學長</a> <a href="https://asmedigitalcollection.asme.org/IDETC-CIE/proceedings/IDETC-CIE2021/85444/V08AT08A015/1128605">2021 年發表的論文</a></p>
 <h3>程式開發</h3>
+<p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EUd5wZF9jSdCtrDkLvEfyj4Bq8pkV0b3kKZ1fxeNMhC8qg?e=slvduQ">下載 MSYS2 and Cmake.7z</a> (下載 3.47GB 解開後 12.6GB, for @nfu users only)</p>
 <p>在計算機程式開發過程中學習英文、演算法、資料結構與資料庫 (SQLite and PostgreSQL)</p>
 <p style="padding-left: 30px;"><a href="https://www.cs.bham.ac.uk/~jxb/DSA/dsa.pdf">Data structures and algorithms</a></p>
 <p style="padding-left: 30px;"><a href="https://link.springer.com/book/10.1007/978-1-4842-0055-1">Python Algorithms</a> (for @nfu users only)</p>
@@ -1047,7 +1048,73 @@ end
 <p>lua 5.3.5 版解譯器適用的 luasec 或 luassl:</p>
 <p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
 <p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
-<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><h1>Brython</h1>
+<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p>
+<h3>可行方案</h3>
+<p>stunnel.conf 檔案設定:</p>
+<p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TSL 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">[https]
+accept =140.130.17.108:443
+connect = 127.0.0.1:23020
+cert = c:\tmp\localhost.crt
+key = c:\tmp\localhost.key</pre>
+<p>threejsFrontend.html 中:</p>
+<p><span style="background-color: #ffff00;">因為 client 要以 wss:// 建立雙向連線, 必須指令 https 對應的 port, 也就是 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">&lt;script&gt;
+    const wsPort = 443;
+    const codec = "cbor";
+&lt;/script&gt;</pre>
+<p>simAddonVisualization stream.lua 中:</p>
+<p>Server 內部由 Modules -&gt; Connectivity -&gt; Visualization Stream 時就是執行 <span style="background-color: #ffff00;">simAddonVisualization stream.lua 啟動時以內建的 http port 23020 啟動</span>, 也就是 stunnel 設定中的 connect 伺服器封包來源, 經由 stunnel 後, 則以外部 IP address 從 443 port 讓 wss:// WebSocket 連線提出 requests.</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+    if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
+        while true do
+            local r,e=pcall(function() wsServer=simWS.start(wsPort) end)
+            if r then break end
+            sim.addLog(sim.verbosity_scriptwarnings,'WS failed to start ('..e..'). Retrying...')
+            sim.wait(0.5,false)
+        end
+    else
+        wsServer=simWS.start(wsPort)
+    end</pre>
+<p>threejsFrontend.js 中:</p>
+<p>這是 <span style="background-color: #ffff00;">client 端擬以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class VisualizationStreamClient {
+    constructor(host = '140.130.17.108', port = 443, codec = 'cbor') {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        this.websocket = new ReconnectingWebSocket(`wss://${this.host}:${this.port}`);</pre>
+<p>RemoteAPIclient.js 中:</p>
+<p>這也是 <span style="background-color: #ffff00;">WebSocket client 端, 以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class RemoteAPIClient {
+    constructor(host = '140.130.17.108', port = 443, codec = "cbor", opts = {}) {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        var packMessage;
+        var unpackMessage;
+        if(this.codec == 'cbor') {
+            //this.websocket.binaryType = "arraybuffer";
+            packMessage = data =&gt; CBOR.encode(data);
+            unpackMessage = async data =&gt; CBOR.decode(await data.arrayBuffer());
+        } else if(this.codec == "json") {
+            packMessage = data =&gt; JSON.stringify(data);
+            unpackMessage = data =&gt; JSON.parse(data);
+        }
+        var wsOpts = {
+            packMessage,
+            unpackMessage,
+            // attach requestId to message as `id` field
+            attachRequestId: (data, requestId) =&gt; Object.assign({id: requestId}, data),
+            // read requestId from message `id` field
+            extractRequestId: data =&gt; data &amp;&amp; data.id,
+        };
+        for(var k in opts)
+            wsOpts[k] = opts[k];
+        this.websocket = new WebSocketAsPromised(`wss://${this.host}:${this.port}`, wsOpts);
+    }</pre>
+<p></p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>

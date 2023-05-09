@@ -2,6 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
+<meta property="head" content="H3">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -94,6 +95,7 @@ img.add_border {
 </head>
 <body>
 <div class='container'><nav>
+        
     <div class="site-wrap">
 
     <div class="site-mobile-menu">
@@ -139,4 +141,119 @@ img.add_border {
           </div>
           
         </header>
-    </nav><section><h1>Site Map</h1><div id="tipue_search_content"></div><ul><li><a href='About.html'>About</a><ul><li><a href='精密機械.html'>精密機械</a><ul><li><a href='程式開發.html'>程式開發</a></li></ul><li><a href='Javascript.html'>Javascript</a><li><a href='TOEIC.html'>TOEIC</a><li><a href='nginx.html'>nginx</a><li><a href='Downloads.html'>Downloads</a><li><a href='OBS.html'>OBS</a></li></ul><li><a href='cmsimde.html'>cmsimde</a><ul><li><a href='Upload.html'>Upload</a><li><a href='ax5.html'>ax5</a><li><a href='Games.html'>Games</a></li></ul><li><a href='Note.html'>Note</a><ul><li><a href='w11.html'>w11</a><li><a href='wss.html'>wss</a><li><a href='Visualization.html'>Visualization</a><li><a href='Git.html'>Git</a></li></ul><li><a href='Coppeliasim.html'>Coppeliasim</a><ul><li><a href='正在解決.html'>正在解決</a><ul><li><a href='可行方案.html'>可行方案</a></li></li></ul></ul><li><a href='Brython.html'>Brython</a><ul><li><a href='Brython_ex2.html'>Brython_ex2</a></li></ul></section></div></body></html>
+    <div id="tipue_search_content">正在解決 << <a href='正在解決.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>可行方案</h1>
+<p>stunnel.conf 檔案設定:</p>
+<p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TSL 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">[https]
+accept =140.130.17.108:443
+connect = 127.0.0.1:23020
+cert = c:\tmp\localhost.crt
+key = c:\tmp\localhost.key</pre>
+<p>threejsFrontend.html 中:</p>
+<p><span style="background-color: #ffff00;">因為 client 要以 wss:// 建立雙向連線, 必須指令 https 對應的 port, 也就是 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">&lt;script&gt;
+    const wsPort = 443;
+    const codec = "cbor";
+&lt;/script&gt;</pre>
+<p>simAddonVisualization stream.lua 中:</p>
+<p>Server 內部由 Modules -&gt; Connectivity -&gt; Visualization Stream 時就是執行 <span style="background-color: #ffff00;">simAddonVisualization stream.lua 啟動時以內建的 http port 23020 啟動</span>, 也就是 stunnel 設定中的 connect 伺服器封包來源, 經由 stunnel 後, 則以外部 IP address 從 443 port 讓 wss:// WebSocket 連線提出 requests.</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+    if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
+        while true do
+            local r,e=pcall(function() wsServer=simWS.start(wsPort) end)
+            if r then break end
+            sim.addLog(sim.verbosity_scriptwarnings,'WS failed to start ('..e..'). Retrying...')
+            sim.wait(0.5,false)
+        end
+    else
+        wsServer=simWS.start(wsPort)
+    end</pre>
+<p>threejsFrontend.js 中:</p>
+<p>這是 <span style="background-color: #ffff00;">client 端擬以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class VisualizationStreamClient {
+    constructor(host = '140.130.17.108', port = 443, codec = 'cbor') {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        this.websocket = new ReconnectingWebSocket(`wss://${this.host}:${this.port}`);</pre>
+<p>RemoteAPIclient.js 中:</p>
+<p>這也是 <span style="background-color: #ffff00;">WebSocket client 端, 以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class RemoteAPIClient {
+    constructor(host = '140.130.17.108', port = 443, codec = "cbor", opts = {}) {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        var packMessage;
+        var unpackMessage;
+        if(this.codec == 'cbor') {
+            //this.websocket.binaryType = "arraybuffer";
+            packMessage = data =&gt; CBOR.encode(data);
+            unpackMessage = async data =&gt; CBOR.decode(await data.arrayBuffer());
+        } else if(this.codec == "json") {
+            packMessage = data =&gt; JSON.stringify(data);
+            unpackMessage = data =&gt; JSON.parse(data);
+        }
+        var wsOpts = {
+            packMessage,
+            unpackMessage,
+            // attach requestId to message as `id` field
+            attachRequestId: (data, requestId) =&gt; Object.assign({id: requestId}, data),
+            // read requestId from message `id` field
+            extractRequestId: data =&gt; data &amp;&amp; data.id,
+        };
+        for(var k in opts)
+            wsOpts[k] = opts[k];
+        this.websocket = new WebSocketAsPromised(`wss://${this.host}:${this.port}`, wsOpts);
+    }</pre>
+<p></p><br />正在解決 << <a href='正在解決.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
+        
+    <!-- footer -->
+      <div class="container">
+        <div class="row pt-3 mx-auto">
+            <p>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            </p>
+        </div>
+      </div>
+    <!-- for footer -->
+    
+        </div> <!-- for site wrap -->
+            <!-- <script src="../cmsimde/static/chimper/js/jquery-3.3.1.min.js"></script> -->
+            <script src="../cmsimde/static/chimper/js/jquery-migrate-3.0.1.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/jquery-ui.js"></script>
+            <script src="../cmsimde/static/chimper/js/popper.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/bootstrap.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/owl.carousel.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/jquery.stellar.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/jquery.countdown.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/jquery.magnific-popup.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/bootstrap-datepicker.min.js"></script>
+            <script src="../cmsimde/static/chimper/js/aos.js"></script>
+            <!--
+            <script src="../cmsimde/static/chimper/js/typed.js"></script>
+                    <script>
+                    var typed = new Typed('.typed-words', {
+                    strings: ["Web Apps"," WordPress"," Mobile Apps"],
+                    typeSpeed: 80,
+                    backSpeed: 80,
+                    backDelay: 4000,
+                    startDelay: 1000,
+                    loop: true,
+                    showCursor: true
+                    });
+                    </script>
+            -->
+            <script src="../cmsimde/static/chimper/js/main.js"></script>
+        
+<!-- 啟用 LaTeX equations 編輯 -->
+  <!-- <script>
+  MathJax = {
+    tex: {inlineMath: [['$', '$'], ['\(', '\)']]}
+  };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>-->
+    </body></html>
+        
