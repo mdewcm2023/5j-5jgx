@@ -1028,7 +1028,7 @@ function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
 </pre>
-<h2>正在解決</h2>
+<h2>WebSocket</h2>
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
@@ -1048,8 +1048,8 @@ end
 <p>lua 5.3.5 版解譯器適用的 luasec 或 luassl:</p>
 <p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
 <p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
-<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p>
-<h3>可行方案</h3>
+<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><h3>瀏覽器串流</h3>
+<p>以下設定適用於 CoppeliaSim 採 https 檢視瀏覽器上的場景串流.</p>
 <p>stunnel.conf 檔案設定:</p>
 <p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TSL 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">[https]

@@ -1028,7 +1028,7 @@ function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
 </pre>
-<h2>正在解決</h2>
+<h2>WebSocket</h2>
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
@@ -1048,8 +1048,7 @@ end
 <p>lua 5.3.5 版解譯器適用的 luasec 或 luassl:</p>
 <p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
 <p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
-<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p>
-<h3>可行方案</h3>
+<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><h3>可行方案</h3>
 <p>stunnel.conf 檔案設定:</p>
 <p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TSL 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">[https]
@@ -1064,7 +1063,7 @@ key = c:\tmp\localhost.key</pre>
     const codec = "cbor";
 &lt;/script&gt;</pre>
 <p>simAddonVisualization stream.lua 中:</p>
-<p>Server 內部由 Modules -&gt; Connectivity -&gt; Visualization Stream 時就是執行 simAddonVisualization stream.lua 啟動時以內建的 http port 23020 啟動, 也就是 stunnel 設定中的 connect 伺服器封包來源, 經由 stunnel 後, 則以外部 IP address 從 443 port 讓 wss:// WebSocket 連線提出 requests.</p>
+<p>Server 內部由 Modules -&gt; Connectivity -&gt; Visualization Stream 時就是執行 <span style="background-color: #ffff00;">simAddonVisualization stream.lua 啟動時以內建的 http port 23020 啟動</span>, 也就是 stunnel 設定中的 connect 伺服器封包來源, 經由 stunnel 後, 則以外部 IP address 從 443 port 讓 wss:// WebSocket 連線提出 requests.</p>
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
     sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
     if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
@@ -1078,6 +1077,7 @@ key = c:\tmp\localhost.key</pre>
         wsServer=simWS.start(wsPort)
     end</pre>
 <p>threejsFrontend.js 中:</p>
+<p>這是 <span style="background-color: #ffff00;">client 端擬以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class VisualizationStreamClient {
     constructor(host = '140.130.17.108', port = 443, codec = 'cbor') {
         this.host = host;
@@ -1085,6 +1085,7 @@ key = c:\tmp\localhost.key</pre>
         this.codec = codec;
         this.websocket = new ReconnectingWebSocket(`wss://${this.host}:${this.port}`);</pre>
 <p>RemoteAPIclient.js 中:</p>
+<p>這也是 <span style="background-color: #ffff00;">WebSocket client 端, 以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class RemoteAPIClient {
     constructor(host = '140.130.17.108', port = 443, codec = "cbor", opts = {}) {
         this.host = host;
