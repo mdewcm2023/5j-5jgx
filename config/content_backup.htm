@@ -1,4 +1,11 @@
 <h1>About</h1>
+<p><span style="background-color: #ffff00;">精密機械設計工程師的三個電腦網路與程式端: 近端、中端與遠端</span>.</p>
+<ol>
+<li>近端帶有各種可攜帶且開源的程式套件與工具 (能編譯 C, C++, 解譯 Javascript, Python 與 Lua 的 USB 隨身碟或筆電系統)</li>
+<li>中端即工作站室, 其中是各種自行安裝配置的虛擬電腦主機 (Windows and Linux servers)</li>
+<li>遠端即雲端, 其中包含各大公司所提供的免費或付費服務 (Github, Onedrive, Repllit, Azure, AWS)</li>
+</ol>
+<hr/>
 <p>2009 年啟用的電腦配置 8GB 安裝 Ubuntu 22.04 操作系統, 以 Nginx 伺服靜態系統, 以 wsgi 伺服動態系統.</p>
 <p>Repo: <a href="https://github.com/mdewcm2023/5j-5jgx">https://github.com/mdewcm2023/5j-5jgx</a></p>
 <p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
@@ -15,8 +22,7 @@ User git
 Hostname github.com
 ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre>
 <p>need to chmod u+x ./acp</p>
-<p></p>
-<h2>精密機械</h2>
+<p></p><h2>精密機械</h2>
 <p><a href="https://github.com/KmolYuan">學長</a> <a href="https://asmedigitalcollection.asme.org/IDETC-CIE/proceedings/IDETC-CIE2021/85444/V08AT08A015/1128605">2021 年發表的論文</a></p>
 <h3>程式開發</h3>
 <p>在計算機程式開發過程中學習英文、演算法、資料結構與資料庫 (SQLite and PostgreSQL)</p>
@@ -36,8 +42,11 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>下載後解開壓縮檔案, 進入原始碼目錄後執行:</p>
 <p style="padding-left: 30px;">make PLAT=mingw</p>
 <p>即可在 src 目錄中取得 lua.exe, luac.exe, lua53.dll 以及 liblua.a (以 lua 5.3.5 為例)</p>
-<p></p><h2>Javascript</h2>
-<p>The best way to learn Javascript:<br/><br/>Learning JavaScript is a great way to get started with web development, as it is a powerful and versatile programming language used in many different applications. Here are some tips on how to learn JavaScript effectively:<br/><br>1. Start with the basics: Before diving into complex frameworks or libraries, make sure you have a solid foundation of the basics of JavaScript. This includes understanding variables, data types, functions, loops, and conditional statements.<br/><br/>2. Practice coding: The best way to learn JavaScript is to practice coding. This means writing your own code, working on exercises and projects, and experimenting with different concepts.<br/><br>3. Use online resources: There are many online resources available for learning JavaScript, including video tutorials, online courses, and documentation. Some popular options include Codecademy, FreeCodeCamp, and Mozilla Developer Network.<br/><br/>4. Join a community: Joining a community of JavaScript learners can be helpful for getting support and feedback on your code, as well as learning from others. You can join online communities such as Stack Overflow, Reddit, or GitHub.<br/><br/>5. Build projects: Building projects is a great way to apply what you've learned and gain practical experience with JavaScript. Start with small projects and gradually increase the complexity as you become more comfortable with the language.<br/><br/>6. Keep learning: JavaScript is constantly evolving, so it's important to stay up to date with the latest updates and trends. Subscribe to newsletters, follow blogs and podcasts, and attend conferences to continue your learning journey.<br/><br/>To have a solid foundation of the basics of JavaScript, you can follow these steps:<br/><br/>1. Read the documentation: Start by reading the official documentation for JavaScript. This will give you a thorough understanding of the language's syntax, data types, functions, and more. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide">The Mozilla Developer Network has an excellent JavaScript Guide</a> that covers all the basics.<br/><br/>2. Follow a structured course: Online courses, such as Codecademy or FreeCodeCamp, can provide a structured way to learn the basics of JavaScript. These courses often include interactive exercises and projects to help you practice what you've learned.<br/><br/>3. Practice coding: To solidify your understanding of the basics, you need to practice coding. You can start by writing simple programs that utilize variables, data types, functions, loops, and conditional statements. As you practice, gradually increase the complexity of your programs.<br/><br/>4. Review code examples: Reading and analyzing code examples can help you understand how the basics of JavaScript are used in practice. You can find examples on websites like GitHub or by reading through the source code of popular JavaScript libraries and frameworks.<br/><br/>5. Get feedback: Getting feedback on your code from other developers can help you identify areas for improvement and solidify your understanding of the basics. Joining online communities, like Stack Overflow, can be a good way to get feedback on your code and ask questions.</br></br></p>
+<hr/>
+<p>因為 CoppeliaSim 透過 simExtWS.dll (Websocket extension server), simAddonVisualization stream.lua 以及 threejsFrontend.js 讓使用者可以在啟動 Visualization stream 伺服器後, 由瀏覽器的特定 port (內定為 23020) 取得 threejsFrontend.html 頁面 client 程式與 server 端傳遞場景模擬串流資料, 可以讓多人即時觀看場景模擬.</p>
+<p>內建的 simAddonVisualization stream.lua 僅讓 client 端以 HTTP request 場景物件串流資料 (即透過 ws:// 發出 requests), 若要讓 client 以 HTTPS request 發出 requests (即改透過 wss://), 則 simAddonVisualization stream.lua 必須建立 SSL 架構的 server, 這時就需要 Lua 帶有 ssl 或 luasec 模組才行.</p>
+<p>因此自行編譯 lua 原始碼的用意即在設法根據需求延伸 CoppeliaSim 的功能.</p><h2>Javascript</h2>
+<p>The best way to learn Javascript:<br/><br/>Learning JavaScript is a great way to get started with web development, as it is a powerful and versatile programming language used in many different applications. Here are some tips on how to learn JavaScript effectively:<br/><br/>1. Start with the basics: Before diving into complex frameworks or libraries, make sure you have a solid foundation of the basics of JavaScript. This includes understanding variables, data types, functions, loops, and conditional statements.<br/><br/>2. Practice coding: The best way to learn JavaScript is to practice coding. This means writing your own code, working on exercises and projects, and experimenting with different concepts.<br/><br/>3. Use online resources: There are many online resources available for learning JavaScript, including video tutorials, online courses, and documentation. Some popular options include Codecademy, FreeCodeCamp, and Mozilla Developer Network.<br/><br/>4. Join a community: Joining a community of JavaScript learners can be helpful for getting support and feedback on your code, as well as learning from others. You can join online communities such as Stack Overflow, Reddit, or GitHub.<br/><br/>5. Build projects: Building projects is a great way to apply what you've learned and gain practical experience with JavaScript. Start with small projects and gradually increase the complexity as you become more comfortable with the language.<br/><br/>6. Keep learning: JavaScript is constantly evolving, so it's important to stay up to date with the latest updates and trends. Subscribe to newsletters, follow blogs and podcasts, and attend conferences to continue your learning journey.<br/><br/>To have a solid foundation of the basics of JavaScript, you can follow these steps:<br/><br/>1. Read the documentation: Start by reading the official documentation for JavaScript. This will give you a thorough understanding of the language's syntax, data types, functions, and more. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide">The Mozilla Developer Network has an excellent JavaScript Guide</a> that covers all the basics.<br/><br/>2. Follow a structured course: Online courses, such as Codecademy or FreeCodeCamp, can provide a structured way to learn the basics of JavaScript. These courses often include interactive exercises and projects to help you practice what you've learned.<br/><br/>3. Practice coding: To solidify your understanding of the basics, you need to practice coding. You can start by writing simple programs that utilize variables, data types, functions, loops, and conditional statements. As you practice, gradually increase the complexity of your programs.<br/><br/>4. Review code examples: Reading and analyzing code examples can help you understand how the basics of JavaScript are used in practice. You can find examples on websites like GitHub or by reading through the source code of popular JavaScript libraries and frameworks.<br/><br/>5. Get feedback: Getting feedback on your code from other developers can help you identify areas for improvement and solidify your understanding of the basics. Joining online communities, like Stack Overflow, can be a good way to get feedback on your code and ask questions.</p>
 <p>References:</p>
 <p style="padding-left: 30px;"><a href="https://eloquentjavascript.net/">https://eloquentjavascript.net/</a></p>
 <p style="padding-left: 30px;"><a href="http://jsforcats.com/">http://jsforcats.com/</a></p>
@@ -1022,7 +1031,7 @@ end
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
-<hr/>
+<hr>
 <p>有關 Websocket protocol 運作原理:</p>
 <p>WebSocket是一種在<span style="background-color: #ffff00;">Web瀏覽器和網頁伺服器之間提供全雙工通訊通道的協議</span>。WebSocket協議允許網頁使用一個單一的TCP連接來進行全雙工通訊，以取代傳統的HTTP請求/響應模型，可以更快地傳輸數據，減少延遲。</p>
 <p>WebSocket的運作原理如下：</p>
@@ -1322,7 +1331,7 @@ doc["threejsblock"].bind("click", threejsblock.do)
 <div style="width: 100%; height: 100%;"><textarea autocomplete="off" id="kw_console2"></textarea></div>
 <p><!-- Brython 程式執行的結果, 都以 brython_div1 作為切入位置 --></p>
 <div id="brython_div2"></div>
-<!-- editor2 結束 --><hr>
+<!-- editor2 結束 --><hr/>
 <p>
 <script src="https://unpkg.com/three@0.144.0/build/three.js" type="text/javascript"></script>
 </p>
