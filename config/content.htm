@@ -4,7 +4,7 @@
 <p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
 <p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
 <p>on cad2 account jgx: <a href="http://cad2.cycu.org/~jgx/5jgx">http://cad2.cycu.org/~jgx/5jgx</a></p>
-<p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR" style="font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #ffffff;">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
+<p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
 <p>on cad2: <a>https://cad2.cycu.org:8001</a> from hupper -m server.py</p>
 <p>ssh-keygen: <a href="https://mde.tw/blog/2022_fall_courses_w10.html">https://mde.tw/blog/2022_fall_courses_w10.html</a></p>
 <p>sudo apt install ncat</p>
@@ -15,13 +15,37 @@ User git
 Hostname github.com
 ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre>
 <p>need to chmod u+x ./acp</p>
-<p></p><h2>精密機械</h2>
-<p><a href="https://github.com/KmolYuan">學長</a> <a href="https://asmedigitalcollection.asme.org/IDETC-CIE/proceedings/IDETC-CIE2021/85444/V08AT08A015/1128605">2021 年發表的論文</a></p><h2>Javascript</h2>
+<p></p>
+<h2>精密機械</h2>
+<p><a href="https://github.com/KmolYuan">學長</a> <a href="https://asmedigitalcollection.asme.org/IDETC-CIE/proceedings/IDETC-CIE2021/85444/V08AT08A015/1128605">2021 年發表的論文</a></p>
+<h3>程式開發</h3>
+<p>在計算機程式開發過程中學習英文、演算法、資料結構與資料庫 (SQLite and PostgreSQL)</p>
+<p style="padding-left: 30px;"><a href="https://www.cs.bham.ac.uk/~jxb/DSA/dsa.pdf">Data structures and algorithms</a></p>
+<p style="padding-left: 30px;"><a href="https://link.springer.com/book/10.1007/978-1-4842-0055-1">Python Algorithms</a> (for @nfu users only)</p>
+<p style="padding-left: 30px;"><a href="https://www.cs.auckland.ac.nz/courses/compsci105ssc/resources/ProblemSolvingwithAlgorithmsandDataStructures.pdf">Problem Solving with Algorithms and Data Structures</a></p>
+<p>Javascript (在瀏覽器中學習)</p>
+<p>Python (Brython) - 以 Brython 接續 Javascript 在網頁中用 Brython 解題, 透過網路與 Server 端的 Python 程式互動, 而 Server 端的 Python 則可再與 MCAD API 互動 (SolidWorks, Solid Edge, NX 等)</p>
+<p>ANSIC (Arduino) - 從 Arduino 硬體控制 C 程式學習與 Server 端的 Python 程式整合</p>
+<p>C++ (Solvespace) - 自行編譯 Solvespace, 建立 dll 與 Python 互動, 導入 Pyslvs-UI</p>
+<p>Lua (CoppeliaSim) - 虛實整合模擬與控制系統設計平台</p>
+<p>MSYS2 與 Cmake - C 與 C++ 編譯器</p>
+<hr/>
+<p>以 MSYS2 編譯 lua 原始碼: </p>
+<p>REM 設定 msys2 64 位元的執行路徑<br/>set path_msys2=%Disk%:\msys64_20210419\mingw64\bin;</p>
+<p>Lua 原始碼 - 以 ANSI C 編寫</p>
+<p>下載後解開壓縮檔案, 進入原始碼目錄後執行:</p>
+<p style="padding-left: 30px;">make PLAT=mingw</p>
+<p>即可在 src 目錄中取得 lua.exe, luac.exe, lua53.dll 以及 liblua.a (以 lua 5.3.5 為例)</p>
+<hr/>
+<p>因為 CoppeliaSim 透過 simExtWS.dll (Websocket extension server), simAddonVisualization stream.lua 以及 threejsFrontend.js 讓使用者可以在啟動 Visualization stream 伺服器後, 由瀏覽器的特定 port (內定為 23020) 取得 threejsFrontend.html 頁面 client 程式與 server 端傳遞場景模擬串流資料, 可以讓多人即時觀看場景模擬.</p>
+<p>內建的 simAddonVisualization stream.lua 僅讓 client 端以 HTTP request 場景物件串流資料 (即透過 ws:// 發出 requests), 若要讓 client 以 HTTPS request 發出 requests (即改透過 wss://), 則 simAddonVisualization stream.lua 必須建立 SSL 架構的 server, 這時就需要 Lua 帶有 ssl 或 luasec 模組才行.</p>
+<p>因此自行編譯 lua 原始碼的用意即在設法根據需求延伸 CoppeliaSim 的功能.</p><h2>Javascript</h2>
 <p>The best way to learn Javascript:<br/><br/>Learning JavaScript is a great way to get started with web development, as it is a powerful and versatile programming language used in many different applications. Here are some tips on how to learn JavaScript effectively:<br/><br/>1. Start with the basics: Before diving into complex frameworks or libraries, make sure you have a solid foundation of the basics of JavaScript. This includes understanding variables, data types, functions, loops, and conditional statements.<br/><br/>2. Practice coding: The best way to learn JavaScript is to practice coding. This means writing your own code, working on exercises and projects, and experimenting with different concepts.<br/><br/>3. Use online resources: There are many online resources available for learning JavaScript, including video tutorials, online courses, and documentation. Some popular options include Codecademy, FreeCodeCamp, and Mozilla Developer Network.<br/><br/>4. Join a community: Joining a community of JavaScript learners can be helpful for getting support and feedback on your code, as well as learning from others. You can join online communities such as Stack Overflow, Reddit, or GitHub.<br/><br/>5. Build projects: Building projects is a great way to apply what you've learned and gain practical experience with JavaScript. Start with small projects and gradually increase the complexity as you become more comfortable with the language.<br/><br/>6. Keep learning: JavaScript is constantly evolving, so it's important to stay up to date with the latest updates and trends. Subscribe to newsletters, follow blogs and podcasts, and attend conferences to continue your learning journey.<br/><br/>To have a solid foundation of the basics of JavaScript, you can follow these steps:<br/><br/>1. Read the documentation: Start by reading the official documentation for JavaScript. This will give you a thorough understanding of the language's syntax, data types, functions, and more. <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide">The Mozilla Developer Network has an excellent JavaScript Guide</a> that covers all the basics.<br/><br/>2. Follow a structured course: Online courses, such as Codecademy or FreeCodeCamp, can provide a structured way to learn the basics of JavaScript. These courses often include interactive exercises and projects to help you practice what you've learned.<br/><br/>3. Practice coding: To solidify your understanding of the basics, you need to practice coding. You can start by writing simple programs that utilize variables, data types, functions, loops, and conditional statements. As you practice, gradually increase the complexity of your programs.<br/><br/>4. Review code examples: Reading and analyzing code examples can help you understand how the basics of JavaScript are used in practice. You can find examples on websites like GitHub or by reading through the source code of popular JavaScript libraries and frameworks.<br/><br/>5. Get feedback: Getting feedback on your code from other developers can help you identify areas for improvement and solidify your understanding of the basics. Joining online communities, like Stack Overflow, can be a good way to get feedback on your code and ask questions.</p>
 <p>References:</p>
 <p style="padding-left: 30px;"><a href="https://eloquentjavascript.net/">https://eloquentjavascript.net/</a></p>
 <p style="padding-left: 30px;"><a href="http://jsforcats.com/">http://jsforcats.com/</a></p>
-<p style="padding-left: 30px;"><a href="https://github.com/getify/You-Dont-Know-JS">https://github.com/getify/You-Dont-Know-JS</a></p><h2>TOEIC</h2>
+<p style="padding-left: 30px;"><a href="https://github.com/getify/You-Dont-Know-JS">https://github.com/getify/You-Dont-Know-JS</a></p>
+<h2>TOEIC</h2>
 <p>多益（TOEIC）是一種用於測試非英語為母語人士英語語言能力的標準化考試。它是由ETS（Educational Testing Service）組織開發的，旨在評估考生的英語聽力和閱讀能力，用於在全球範圍內衡量英語語言能力。<br/><br/>多益考試分為兩個部分：聽力和閱讀。聽力部分包括聆聽錄音並回答問題，閱讀部分包括閱讀文章並回答問題。考試時間為2小時，總分為990分，聽力和閱讀各佔50%。<br/><br/>多益考試通常用於衡量非英語國家的學生、畢業生和職業人士的英語水平。許多公司和學校使用多益考試作為聘請和錄取員工和學生的標準，以衡量他們的英語水平。</p>
 <p>TOEIC 代表 "Test of English for International Communication"，翻譯成中文是「國際英語溝通測驗」。</p>
 <p>TOEIC 包含兩種題型：單選題和填充題。其中，閱讀部分是以單選題為主，聽力部分則是以填充題和單選題結合的形式出現。閱讀部分的單選題是選出最適合或最相符的答案，填充題是根據題目要求填入適當的單詞或短語。聽力部分的填充題是根據所聽到的對話或短文內容填空，單選題是選出最適合或最相符的答案。</p>
@@ -33,7 +57,8 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>外部 711 - user rwx, group x, other x</p>
 <p>public_html 755 - user rwx, group rx, other rx</p>
 <p></p>
-<p></p><h1>Downloads</h1>
+<p></p>
+<h2>Downloads</h2>
 <p>OBS: <a href="https://obsproject.com/download">https://obsproject.com/download</a></p>
 <p>Virtualbox: <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EV5lw40RXvNFue1Cr2sivioBuOj_QA5KzAxDMU0Mkf7z8w?e=NtOJeN">wcm_portable_w2-5.7z</a> (下載 220MB 解開後 880MB)</p>
@@ -44,7 +69,9 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>議題: OBS 可以透過 Youtube 或其他雲端網站進行 live streaming (現場串流直播)</p>
 <p>利用程式控制 OBS:</p>
 <p style="padding-left: 30px;"><a href="https://docs.obsproject.com/scripting">https://docs.obsproject.com/scripting</a></p>
-<p></p><h1>Upload</h1>
+<p></p>
+<h1>cmsimde</h1>
+<h2>Upload</h2>
 <p><img alt="" height="300" src="/images/網際內容管理五月五日留念.jpg" width="400"/></p>
 <p><img alt="" height="711" src="/images/托福考試.png" width="400"/></p>
 <p></p>
@@ -105,7 +132,8 @@ function dataURLtoFile(dataUrl, filename) {
     u8arr[n] = bstr.charCodeAt(n);
   }
   return new File([u8arr], filename, { type: mime });
-}</pre><h2>ax5</h2>
+}</pre>
+<h2>ax5</h2>
 <p>using ax5:</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">var uploader = new ax5.ui.uploader({
   target: $('[data-ax5uploader="basic"]'),
@@ -292,7 +320,7 @@ axios.get('https://api.example.com/data')
 </ol>
 <p>Overall, axios provides a more modern and convenient way to make HTTP requests than traditional AJAX, and is widely used and well-documented. However, there are still situations where traditional AJAX may be more appropriate, depending on the specific requirements of your application.</p>
 <p>axios was developed by Matt Zabriskie, a web developer based in New York City. It was originally released in 2014 as an alternative to the jQuery.ajax() function, and has since become a popular library for making HTTP requests in JavaScript applications.<br/><br/>The project is open source and hosted on GitHub, where it is maintained by a community of contributors. The library is licensed under the MIT license, which allows for free use and modification of the code in both open source and commercial projects.</p>
-<h1>Games</h1>
+<h2>Games</h2>
 <p>Learn Python and Javascript:</p>
 <p style="padding-left: 30px;">Python:</p>
 <p style="padding-left: 60px;"><a href="/downloads/python_beginners.pdf">python_beginners.pdf</a></p>
@@ -307,15 +335,15 @@ axios.get('https://api.example.com/data')
 <p style="padding-left: 30px;"><a href="https://brython.info/gallery/taquin.html">https://brython.info/gallery/taquin.html</a></p>
 <p><a href="https://github.com/BrythonServer/ggame">https://github.com/BrythonServer/ggame</a></p>
 <p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p>
-<h1>w11</h1>
+<h1>Note</h1>
+<h2>w11</h2>
 <p>單機場景加上計分<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) 60</p>
 <p>修改標題, 加入學員 github 帳號, 以及 w11 下的學員網頁      </p>
-<p><a href="https://mdecd2023.github.io/2b2-pj2bg1">pj2bg1</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg1">repo</a>) X 41023246<br/><a href="https://mdecd2023.github.io/2b2-pj2bg2">pj2bg2</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg2">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg3">pj2bg3</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg3">repo</a>) 41023252, 41023211<br/><a href="https://mdecd2023.github.io/2b2-pj2bg4">pj2bg4</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg4">repo</a>) X 41023201<br/><a href="https://mdecd2023.github.io/2b2-pj2bg5">pj2bg5</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg5">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg6">pj2bg6</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg6">repo</a>) 41023226, 41023220 網頁標題未改, 41023233<br/><a href="https://mdecd2023.github.io/2b2-pj2bg7">pj2bg7</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg7">repo</a>) 41023228 網頁標題未改 41023219, 41023221<br/><a href="https://mdecd2023.github.io/2b2-pj2bg8">pj2bg8</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg8">repo</a>) X 41023242<br/><a href="https://mdecd2023.github.io/2b2-pj2bg9">pj2bg9</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg9">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg10">pj2bg10</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg10">repo</a>) 41023241 無學員 github 帳號<br/><a href="https://mdecd2023.github.io/2b2-pj2bg11">pj2bg11</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg11">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg12">pj2bg12</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg12">repo</a>) 41023251, 41023234 網頁標題未改<br/><a href="https://mdecd2023.github.io/2b2-pj2bg13">pj2bg13</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg13">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg15">pj2bg15</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg15">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg16">pj2bg16</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg16">repo</a>) X</p>
-<h2>wss</h2>
+<p><a href="https://mdecd2023.github.io/2b2-pj2bg1">pj2bg1</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg1">repo</a>) X 41023246<br/><a href="https://mdecd2023.github.io/2b2-pj2bg2">pj2bg2</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg2">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg3">pj2bg3</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg3">repo</a>) 41023252, 41023211<br/><a href="https://mdecd2023.github.io/2b2-pj2bg4">pj2bg4</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg4">repo</a>) X 41023201<br/><a href="https://mdecd2023.github.io/2b2-pj2bg5">pj2bg5</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg5">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg6">pj2bg6</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg6">repo</a>) 41023226, 41023220 網頁標題未改, 41023233<br/><a href="https://mdecd2023.github.io/2b2-pj2bg7">pj2bg7</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg7">repo</a>) 41023228 網頁標題未改 41023219, 41023221<br/><a href="https://mdecd2023.github.io/2b2-pj2bg8">pj2bg8</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg8">repo</a>) X 41023242<br/><a href="https://mdecd2023.github.io/2b2-pj2bg9">pj2bg9</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg9">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg10">pj2bg10</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg10">repo</a>) 41023241 無學員 github 帳號<br/><a href="https://mdecd2023.github.io/2b2-pj2bg11">pj2bg11</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg11">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg12">pj2bg12</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg12">repo</a>) 41023251, 41023234 網頁標題未改<br/><a href="https://mdecd2023.github.io/2b2-pj2bg13">pj2bg13</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg13">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg15">pj2bg15</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg15">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg16">pj2bg16</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg16">repo</a>) X</p><h2>wss</h2>
 <p><a href="https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/">https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/</a></p>
 <p><a href="https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel">https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel</a></p>
 <p><a href="https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel">https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel</a></p>
-<p>simAddOnVisualization stream.lua </p>
+<p>simAddOnVisualization stream.lua</p>
 <p>\3rdparty\coppelia-ws-remote-api\RemoteAPIClient.js</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">; Certificate/key is needed in server mode and optional in client mode
 cert = /path/to/&lt;myCert&gt;.pem
@@ -347,7 +375,8 @@ output = /var/log/stunnel/stunnel.log
 [wsServer]
 accept = 0.0.0.0:9030             !! listen to all addresses
 connect = 127.0.0.1:9090</pre>
-<p></p><h2>Visualization</h2>
+<p></p>
+<h2>Visualization</h2>
 <p>simExtWS 要先執行.</p>
 <p>SimAddonVisualization stream.lua 按下下拉式功能表之後顯示 running</p>
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_info()
@@ -468,13 +497,15 @@ end
 function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
-</pre><h2>Git</h2>
+</pre>
+<h2>Git</h2>
 <p>測試在 acp 中加入 public_html 目錄中倉儲的 git pull 指令執行</p>
 <p>fatal:  Could not resolve host: github.com</p>
 <p>發生原因: 目前的網路設定無法與 github.com 網站連線</p>
 <p>解決方法:</p>
 <p style="padding-left: 30px;">若使用 https 連線, 請檢查 home_ipv6 目錄下的 .gitconfig, 可能沒有設定 http.proxy</p>
-<p style="padding-left: 30px;">若使用 SSH 連線, 請檢查 Putty 設定的 session 中 Proxy, 可能沒有設定 http 對應的代理主機</p><h2>cmsimde</h2>
+<p style="padding-left: 30px;">若使用 SSH 連線, 請檢查 Putty 設定的 session 中 Proxy, 可能沒有設定 http 對應的代理主機</p>
+<h4>cmsimde</h4>
 <p>準備利用 <a href="https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload">https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload</a> 中所提供的方法在 5j-5jgx 倉儲中的 cmsimde 進行修改, 以便 resize image before uploading.</p>
 <p>To resize an image before uploading it using the jQuery AXuploader, you can use the following steps:</p>
 <ol>
@@ -649,6 +680,7 @@ def upload():
 });
 </pre>
 <h1>Coppeliasim</h1>
+<p>當使用按下 Modules -&gt; Connectivity -&gt;Visualization stream 時, 系統呼叫位於 CoppeliaSim 套件根目錄中的 simAddOnVisualization stream.lua 檔案執行. 其中的 http server 是由 .lua 程式中的 function onWSHTTP(server,connection,resource,data) </p>
 <p><a href="https://nfuedu.sharepoint.com/:u:/s/cad2022/EWdB5MhlZRJKjt5UiNRebR8BN6_AmU0IX1HC7Y6dnRBzQw?e=dLPcDi">Download CoppeliasimEdu_4.3.0rev12.7z</a> (for @nfu users only)</p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EQfam1spz4JHqczkc1uN4H0BJu2jvs07GlPmhUHyMOTuXA?e=cnZSjM">Download CoppeliaSimEdu_4.5.1rev4.7z</a> (for@nfu users only)</p>
 <p>因為 4.5.1 將 usrset.txt 存至 AppData  目錄下, 因此若設為可攜則必須從 C:\users\%USERNAME% 目錄中的 AppData\Roaming\CoppeliaSim 目錄取用相關設定, 因此首次設定完成後, 必須將 C:\ 中的設定存至隨身碟, 且每次啟動可攜時, 再將此設定目錄從可攜檔案中, 以 xcopy 複製到 C:\ 對應目錄.</p>
@@ -864,8 +896,152 @@ function verbose()
 end
 </pre>
 <p>threejsFrontend.js</p>
-<p></p>
-<p></p><h1>Brython</h1>
+<p>simAddonVisualization stream.lua modified: not work yet</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_info()
+    autoStart=sim.getNamedBoolParam('visualizationStream.autoStart')
+    if autoStart==nil then autoStart=false end
+	return {autoStart=autoStart,menu='Connectivity\nVisualization stream (HTTPS)'}
+end
+
+function sysCall_init()
+    addOnPath=sim.getStringParam(sim.stringparam_addonpath)
+    addOnBaseName=addOnPath:match("^.+/(.+).lua$")
+    addOnDir=addOnPath:match("^(.+)/.*")
+
+	if not simWS then
+        sim.addLog(sim.verbosity_errors,'the WS plugin is not available')
+        return {cmd='cleanup'}
+    end
+
+    wsPort = 443
+	
+	certFile = "C:/CoppeliaSimEdu_4.3.0_rev12/localhost.crt"
+	keyFile = "C:/CoppeliaSimEdu_4.3.0_rev12/localhost.key"
+	
+	cert = assert(io.open(certFile, "r"))
+	key = assert(io.open(keyFile, "r"))
+	ssl_params = {cert = cert:read("*all"), key = key:read("*all")}
+	cert:close()
+	key:close()
+
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+
+    wssServer = simWS.start(wsPort)
+	
+	simWS.setOpenHandler(wssServer, 'onWSOpen')
+	simWS.setCloseHandler(wssServer, 'onWSClose')
+	simWS.setMessageHandler(wssServer, 'onWSMessage')
+	simWS.setHTTPHandler(wssServer, 'onWSHTTP')
+	wsClients = {}
+
+    cbor=require('org.conman.cbor')
+    base64=require('base64')
+    url=require('socket.url')
+
+    sim.test('sim.mergeEvents',true)
+    sim.test('sim.cborEvents',true)
+
+    sim.addLog(sim.verbosity_scriptinfos,'e.g. in your local web browser, type: https://127.0.0.1:'..tostring(wsPort))
+end
+
+function sysCall_addOnScriptSuspend()
+    return {cmd='cleanup'}
+end
+
+function sysCall_event(data)
+    sendEventRaw(data)
+end
+
+function sysCall_cleanup()
+    if wsServer then
+        simWS.stop(wsServer)
+    end
+end
+
+function getFileContents(path)
+    local f,err,errno=io.open(path,"rb")
+    if f then
+        local content=f:read("*all")
+        f:close()
+        return 200,content
+    else
+        return 404,nil
+    end
+end
+
+function onWSOpen(server,connection)
+    if server==wsServer then
+        wsClients[connection]=1
+        sendEventRaw(sim.getGenesisEvents(),connection)
+    end
+end
+
+function onWSClose(server,connection)
+    if server==wsServer then
+        wsClients[connection]=nil
+    end
+end
+
+function onWSMessage(server,connection,message)
+end
+
+function onWSHTTP(server,connection,resource,data)
+    resource=url.unescape(resource)
+    local mainPage='threejsFrontend'
+    local status,data=404,nil
+    if resource=='/' or resource=='/'..mainPage..'.html' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.html')
+        if status==200 then
+            data=string.gsub(data,'const wsPort = 23020;','const wsPort = '..wsPort..';')
+        end
+    elseif resource=='/'..mainPage..'.js' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.js')
+    elseif resource:sub(1,10)=='/3rdparty/' then
+        status,data=getFileContents(resourcesDir..resource)
+    end
+    if status==404 and resource~='/favicon.ico' then
+        sim.addLog(sim.verbosity_errors,'resource not found: '..resource)
+    end
+    return status,data
+end
+
+function sendEventRaw(d,conn)
+    if d==nil then return end
+
+    if wsServer then
+        for connection,_ in pairs(wsClients) do
+            if conn==nil or conn==connection then
+                simWS.send(wsServer,connection,d,simWS.opcode.binary)
+            end
+        end
+    end
+end
+
+function verbose()
+    return sim.getNamedInt32Param('visualizationStream.verbose') or 0
+end
+</pre>
+<h2>正在解決</h2>
+<p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
+<p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
+<p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
+<hr/>
+<p>有關 Websocket protocol 運作原理:</p>
+<p>WebSocket是一種在<span style="background-color: #ffff00;">Web瀏覽器和網頁伺服器之間提供全雙工通訊通道的協議</span>。WebSocket協議允許網頁使用一個單一的TCP連接來進行全雙工通訊，以取代傳統的HTTP請求/響應模型，可以更快地傳輸數據，減少延遲。</p>
+<p>WebSocket的運作原理如下：</p>
+<p>1. 首先，客戶端發起一個WebSocket請求，這個請求類似於HTTP請求，但是使用的是特殊的WebSocket URL格式，例如：ws://example.com/chat。(因此目前的重點是讓<span style="background-color: #ffff00;">客戶端發出的 WebSocket 採 https 傳送</span>)</p>
+<p>2. 伺服器接收到請求後，會回應一個HTTP 101切換協議的狀態碼，表示伺服器同意切換到WebSocket協議。(<span style="background-color: #ffff00;">要確定 SimAddonVisualization stream.lua 就是網頁伺服器, 而瀏覽器端的 client 則是 threejsFrontend.js</span>)</p>
+<p>3. 接下來，客戶端和伺服器之間的通訊通道就建立了。雙方可以開始互相發送消息，並且可以隨時中斷連接。</p>
+<p>4. WebSocket協議通訊過程中，雙方可以直接傳送二進位數據，而不需要像HTTP一樣需要轉換成文本格式。</p>
+<p>5. 最後，當一方決定關閉WebSocket連接時，會向對方發送一個關閉封包。對方接收到關閉封包後，會回應一個關閉確認封包，然後關閉連接。</p>
+<p>總體來說，WebSocket協議的運作原理就是通過建立一個全雙工通訊通道，實現網頁與伺服器之間的實時數據通訊。</p>
+<p>在 CoppeliaSim 4.3.0 版本中，CoppeliaSim 提供了視覺化串流（Visualization stream）功能，它可以將 CoppeliaSim 中的 3D 串流資料傳輸到外部應用程式中，例如網頁瀏覽器。其中，"SimAddonVisualization stream.lua" 就是 CoppeliaSim 中的 Web 伺服器，負責將串流資料推送到網路中，而 threejsFrontend.js 則是網頁瀏覽器端的客戶端程式，負責接收來自 CoppeliaSim的串流資料，解讀並建立 3D 場景。</p>
+<p>simExtWS.dll 庫負責建立 WebSocket 伺服器，並將 3D 場景串流資料推送到 WebSocket 客戶端，而simAddOnVisualizationStream.lua 程式則負責控制 WebSocket 服務器的啟動、停止和傳輸串流資料的內容。threejsFrontend.js 則是網頁瀏覽器端的客戶端程式，負責接收來自 CoppeliaSim 的串流資料，解讀場景中的元件後<span>，</span>利用 three.js 建立出瀏覽器中的 3D 場景。</p>
+<p>為了讓 simAddonViaualization stream.lua 能在 SSL 模式下運作, 需要</p>
+<p>lua 5.3.5 版解譯器適用的 luasec 或 luassl:</p>
+<p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
+<p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
+<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>

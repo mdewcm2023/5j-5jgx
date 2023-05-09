@@ -130,7 +130,7 @@ img.add_border {
                             <li><a href="./../blog/index.html">blog</a></li>
                         </ul>
                       </li>
-                     <li class='has-children'><a href='About.html'>About</a><ul class='dropdown'><li><a href='精密機械.html'>精密機械</a><li><a href='Javascript.html'>Javascript</a><li><a href='TOEIC.html'>TOEIC</a><li><a href='nginx.html'>nginx</a></li></ul><li class='has-children'><a href='Downloads.html'>Downloads</a><ul class='dropdown'><li><a href='OBS.html'>OBS</a></li></ul><li class='has-children'><a href='Upload.html'>Upload</a><ul class='dropdown'><li><a href='ax5.html'>ax5</a></li></ul><li><a href='Games.html'>Games</a><li class='has-children'><a href='w11.html'>w11</a><ul class='dropdown'><li><a href='wss.html'>wss</a><li><a href='Visualization.html'>Visualization</a><li><a href='Git.html'>Git</a><li><a href='cmsimde.html'>cmsimde</a></li></ul><li><a href='Coppeliasim.html'>Coppeliasim</a><li class='has-children'><a href='Brython.html'>Brython</a><ul class='dropdown'><li><a href='Brython_ex2.html'>Brython_ex2</a></li>
+                     <li class='has-children'><a href='About.html'>About</a><ul class='dropdown'><li class='has-children'><a href='精密機械.html'>精密機械</a><ul class='dropdown'><li><a href='程式開發.html'>程式開發</a></li></ul><li><a href='Javascript.html'>Javascript</a><li><a href='TOEIC.html'>TOEIC</a><li><a href='nginx.html'>nginx</a><li><a href='Downloads.html'>Downloads</a><li><a href='OBS.html'>OBS</a></li></ul><li class='has-children'><a href='cmsimde.html'>cmsimde</a><ul class='dropdown'><li><a href='Upload.html'>Upload</a><li><a href='ax5.html'>ax5</a><li><a href='Games.html'>Games</a></li></ul><li class='has-children'><a href='Note.html'>Note</a><ul class='dropdown'><li><a href='w11.html'>w11</a><li><a href='wss.html'>wss</a><li><a href='Visualization.html'>Visualization</a><li><a href='Git.html'>Git</a></li></ul><li class='has-children'><a href='Coppeliasim.html'>Coppeliasim</a><ul class='dropdown'><li><a href='正在解決.html'>正在解決</a></li></ul><li class='has-children'><a href='Brython.html'>Brython</a><ul class='dropdown'><li><a href='Brython_ex2.html'>Brython_ex2</a></li>
                       </ul>
                 </nav>
               </div>
@@ -141,7 +141,8 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">cmsimde << <a href='cmsimde.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>Coppeliasim</h1>
+    <div id="tipue_search_content">Git << <a href='Git.html'>Previous</a> <a href='正在解決.html'>Next</a> >> 正在解決<br /><h1>Coppeliasim</h1>
+<p>當使用按下 Modules -&gt; Connectivity -&gt;Visualization stream 時, 系統呼叫位於 CoppeliaSim 套件根目錄中的 simAddOnVisualization stream.lua 檔案執行. 其中的 http server 是由 .lua 程式中的 function onWSHTTP(server,connection,resource,data) </p>
 <p><a href="https://nfuedu.sharepoint.com/:u:/s/cad2022/EWdB5MhlZRJKjt5UiNRebR8BN6_AmU0IX1HC7Y6dnRBzQw?e=dLPcDi">Download CoppeliasimEdu_4.3.0rev12.7z</a> (for @nfu users only)</p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EQfam1spz4JHqczkc1uN4H0BJu2jvs07GlPmhUHyMOTuXA?e=cnZSjM">Download CoppeliaSimEdu_4.5.1rev4.7z</a> (for@nfu users only)</p>
 <p>因為 4.5.1 將 usrset.txt 存至 AppData  目錄下, 因此若設為可攜則必須從 C:\users\%USERNAME% 目錄中的 AppData\Roaming\CoppeliaSim 目錄取用相關設定, 因此首次設定完成後, 必須將 C:\ 中的設定存至隨身碟, 且每次啟動可攜時, 再將此設定目錄從可攜檔案中, 以 xcopy 複製到 C:\ 對應目錄.</p>
@@ -357,8 +358,132 @@ function verbose()
 end
 </pre>
 <p>threejsFrontend.js</p>
-<p></p>
-<p></p><br />cmsimde << <a href='cmsimde.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
+<p>simAddonVisualization stream.lua modified: not work yet</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function sysCall_info()
+    autoStart=sim.getNamedBoolParam('visualizationStream.autoStart')
+    if autoStart==nil then autoStart=false end
+	return {autoStart=autoStart,menu='Connectivity\nVisualization stream (HTTPS)'}
+end
+
+function sysCall_init()
+    addOnPath=sim.getStringParam(sim.stringparam_addonpath)
+    addOnBaseName=addOnPath:match("^.+/(.+).lua$")
+    addOnDir=addOnPath:match("^(.+)/.*")
+
+	if not simWS then
+        sim.addLog(sim.verbosity_errors,'the WS plugin is not available')
+        return {cmd='cleanup'}
+    end
+
+    wsPort = 443
+	
+	certFile = "C:/CoppeliaSimEdu_4.3.0_rev12/localhost.crt"
+	keyFile = "C:/CoppeliaSimEdu_4.3.0_rev12/localhost.key"
+	
+	cert = assert(io.open(certFile, "r"))
+	key = assert(io.open(keyFile, "r"))
+	ssl_params = {cert = cert:read("*all"), key = key:read("*all")}
+	cert:close()
+	key:close()
+
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+
+    wssServer = simWS.start(wsPort)
+	
+	simWS.setOpenHandler(wssServer, 'onWSOpen')
+	simWS.setCloseHandler(wssServer, 'onWSClose')
+	simWS.setMessageHandler(wssServer, 'onWSMessage')
+	simWS.setHTTPHandler(wssServer, 'onWSHTTP')
+	wsClients = {}
+
+    cbor=require('org.conman.cbor')
+    base64=require('base64')
+    url=require('socket.url')
+
+    sim.test('sim.mergeEvents',true)
+    sim.test('sim.cborEvents',true)
+
+    sim.addLog(sim.verbosity_scriptinfos,'e.g. in your local web browser, type: https://127.0.0.1:'..tostring(wsPort))
+end
+
+function sysCall_addOnScriptSuspend()
+    return {cmd='cleanup'}
+end
+
+function sysCall_event(data)
+    sendEventRaw(data)
+end
+
+function sysCall_cleanup()
+    if wsServer then
+        simWS.stop(wsServer)
+    end
+end
+
+function getFileContents(path)
+    local f,err,errno=io.open(path,"rb")
+    if f then
+        local content=f:read("*all")
+        f:close()
+        return 200,content
+    else
+        return 404,nil
+    end
+end
+
+function onWSOpen(server,connection)
+    if server==wsServer then
+        wsClients[connection]=1
+        sendEventRaw(sim.getGenesisEvents(),connection)
+    end
+end
+
+function onWSClose(server,connection)
+    if server==wsServer then
+        wsClients[connection]=nil
+    end
+end
+
+function onWSMessage(server,connection,message)
+end
+
+function onWSHTTP(server,connection,resource,data)
+    resource=url.unescape(resource)
+    local mainPage='threejsFrontend'
+    local status,data=404,nil
+    if resource=='/' or resource=='/'..mainPage..'.html' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.html')
+        if status==200 then
+            data=string.gsub(data,'const wsPort = 23020;','const wsPort = '..wsPort..';')
+        end
+    elseif resource=='/'..mainPage..'.js' then
+        status,data=getFileContents(resourcesDir..'/'..mainPage..'.js')
+    elseif resource:sub(1,10)=='/3rdparty/' then
+        status,data=getFileContents(resourcesDir..resource)
+    end
+    if status==404 and resource~='/favicon.ico' then
+        sim.addLog(sim.verbosity_errors,'resource not found: '..resource)
+    end
+    return status,data
+end
+
+function sendEventRaw(d,conn)
+    if d==nil then return end
+
+    if wsServer then
+        for connection,_ in pairs(wsClients) do
+            if conn==nil or conn==connection then
+                simWS.send(wsServer,connection,d,simWS.opcode.binary)
+            end
+        end
+    end
+end
+
+function verbose()
+    return sim.getNamedInt32Param('visualizationStream.verbose') or 0
+end
+</pre>
+<br />Git << <a href='Git.html'>Previous</a> <a href='正在解決.html'>Next</a> >> 正在解決</div>
         
     <!-- footer -->
       <div class="container">

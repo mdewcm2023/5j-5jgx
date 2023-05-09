@@ -2,6 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
+<meta property="head" content="H3">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -140,25 +141,28 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content"> <a href='精密機械.html'>Next</a> >> 精密機械<br /><h1>About</h1>
-<p>2009 年啟用的電腦配置 8GB 安裝 Ubuntu 22.04 操作系統, 以 Nginx 伺服靜態系統, 以 wsgi 伺服動態系統.</p>
-<p>Repo: <a href="https://github.com/mdewcm2023/5j-5jgx">https://github.com/mdewcm2023/5j-5jgx</a></p>
-<p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
-<p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
-<p>on cad2 account jgx: <a href="http://cad2.cycu.org/~jgx/5jgx">http://cad2.cycu.org/~jgx/5jgx</a></p>
-<p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
-<p>on cad2: <a>https://cad2.cycu.org:8001</a> from hupper -m server.py</p>
-<p>ssh-keygen: <a href="https://mde.tw/blog/2022_fall_courses_w10.html">https://mde.tw/blog/2022_fall_courses_w10.html</a></p>
-<p>sudo apt install ncat</p>
-<p>SSH setup:</p>
-<p>.ssh/config</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">Host github.com
-User git
-Hostname github.com
-ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre>
-<p>need to chmod u+x ./acp</p>
-<p></p>
-<br /> <a href='精密機械.html'>Next</a> >> 精密機械</div>
+    <div id="tipue_search_content">精密機械 << <a href='精密機械.html'>Previous</a> <a href='Javascript.html'>Next</a> >> Javascript<br /><h1>程式開發</h1>
+<p>在計算機程式開發過程中學習英文、演算法、資料結構與資料庫 (SQLite and PostgreSQL)</p>
+<p style="padding-left: 30px;"><a href="https://www.cs.bham.ac.uk/~jxb/DSA/dsa.pdf">Data structures and algorithms</a></p>
+<p style="padding-left: 30px;"><a href="https://link.springer.com/book/10.1007/978-1-4842-0055-1">Python Algorithms</a> (for @nfu users only)</p>
+<p style="padding-left: 30px;"><a href="https://www.cs.auckland.ac.nz/courses/compsci105ssc/resources/ProblemSolvingwithAlgorithmsandDataStructures.pdf">Problem Solving with Algorithms and Data Structures</a></p>
+<p>Javascript (在瀏覽器中學習)</p>
+<p>Python (Brython) - 以 Brython 接續 Javascript 在網頁中用 Brython 解題, 透過網路與 Server 端的 Python 程式互動, 而 Server 端的 Python 則可再與 MCAD API 互動 (SolidWorks, Solid Edge, NX 等)</p>
+<p>ANSIC (Arduino) - 從 Arduino 硬體控制 C 程式學習與 Server 端的 Python 程式整合</p>
+<p>C++ (Solvespace) - 自行編譯 Solvespace, 建立 dll 與 Python 互動, 導入 Pyslvs-UI</p>
+<p>Lua (CoppeliaSim) - 虛實整合模擬與控制系統設計平台</p>
+<p>MSYS2 與 Cmake - C 與 C++ 編譯器</p>
+<hr/>
+<p>以 MSYS2 編譯 lua 原始碼: </p>
+<p>REM 設定 msys2 64 位元的執行路徑<br/>set path_msys2=%Disk%:\msys64_20210419\mingw64\bin;</p>
+<p>Lua 原始碼 - 以 ANSI C 編寫</p>
+<p>下載後解開壓縮檔案, 進入原始碼目錄後執行:</p>
+<p style="padding-left: 30px;">make PLAT=mingw</p>
+<p>即可在 src 目錄中取得 lua.exe, luac.exe, lua53.dll 以及 liblua.a (以 lua 5.3.5 為例)</p>
+<hr/>
+<p>因為 CoppeliaSim 透過 simExtWS.dll (Websocket extension server), simAddonVisualization stream.lua 以及 threejsFrontend.js 讓使用者可以在啟動 Visualization stream 伺服器後, 由瀏覽器的特定 port (內定為 23020) 取得 threejsFrontend.html 頁面 client 程式與 server 端傳遞場景模擬串流資料, 可以讓多人即時觀看場景模擬.</p>
+<p>內建的 simAddonVisualization stream.lua 僅讓 client 端以 HTTP request 場景物件串流資料 (即透過 ws:// 發出 requests), 若要讓 client 以 HTTPS request 發出 requests (即改透過 wss://), 則 simAddonVisualization stream.lua 必須建立 SSL 架構的 server, 這時就需要 Lua 帶有 ssl 或 luasec 模組才行.</p>
+<p>因此自行編譯 lua 原始碼的用意即在設法根據需求延伸 CoppeliaSim 的功能.</p><br />精密機械 << <a href='精密機械.html'>Previous</a> <a href='Javascript.html'>Next</a> >> Javascript</div>
         
     <!-- footer -->
       <div class="container">

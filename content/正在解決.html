@@ -2,6 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
+<meta property="head" content="H2">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -140,25 +141,27 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content"> <a href='精密機械.html'>Next</a> >> 精密機械<br /><h1>About</h1>
-<p>2009 年啟用的電腦配置 8GB 安裝 Ubuntu 22.04 操作系統, 以 Nginx 伺服靜態系統, 以 wsgi 伺服動態系統.</p>
-<p>Repo: <a href="https://github.com/mdewcm2023/5j-5jgx">https://github.com/mdewcm2023/5j-5jgx</a></p>
-<p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
-<p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
-<p>on cad2 account jgx: <a href="http://cad2.cycu.org/~jgx/5jgx">http://cad2.cycu.org/~jgx/5jgx</a></p>
-<p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
-<p>on cad2: <a>https://cad2.cycu.org:8001</a> from hupper -m server.py</p>
-<p>ssh-keygen: <a href="https://mde.tw/blog/2022_fall_courses_w10.html">https://mde.tw/blog/2022_fall_courses_w10.html</a></p>
-<p>sudo apt install ncat</p>
-<p>SSH setup:</p>
-<p>.ssh/config</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">Host github.com
-User git
-Hostname github.com
-ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre>
-<p>need to chmod u+x ./acp</p>
-<p></p>
-<br /> <a href='精密機械.html'>Next</a> >> 精密機械</div>
+    <div id="tipue_search_content">Coppeliasim << <a href='Coppeliasim.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>正在解決</h1>
+<p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
+<p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
+<p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
+<hr/>
+<p>有關 Websocket protocol 運作原理:</p>
+<p>WebSocket是一種在<span style="background-color: #ffff00;">Web瀏覽器和網頁伺服器之間提供全雙工通訊通道的協議</span>。WebSocket協議允許網頁使用一個單一的TCP連接來進行全雙工通訊，以取代傳統的HTTP請求/響應模型，可以更快地傳輸數據，減少延遲。</p>
+<p>WebSocket的運作原理如下：</p>
+<p>1. 首先，客戶端發起一個WebSocket請求，這個請求類似於HTTP請求，但是使用的是特殊的WebSocket URL格式，例如：ws://example.com/chat。(因此目前的重點是讓<span style="background-color: #ffff00;">客戶端發出的 WebSocket 採 https 傳送</span>)</p>
+<p>2. 伺服器接收到請求後，會回應一個HTTP 101切換協議的狀態碼，表示伺服器同意切換到WebSocket協議。(<span style="background-color: #ffff00;">要確定 SimAddonVisualization stream.lua 就是網頁伺服器, 而瀏覽器端的 client 則是 threejsFrontend.js</span>)</p>
+<p>3. 接下來，客戶端和伺服器之間的通訊通道就建立了。雙方可以開始互相發送消息，並且可以隨時中斷連接。</p>
+<p>4. WebSocket協議通訊過程中，雙方可以直接傳送二進位數據，而不需要像HTTP一樣需要轉換成文本格式。</p>
+<p>5. 最後，當一方決定關閉WebSocket連接時，會向對方發送一個關閉封包。對方接收到關閉封包後，會回應一個關閉確認封包，然後關閉連接。</p>
+<p>總體來說，WebSocket協議的運作原理就是通過建立一個全雙工通訊通道，實現網頁與伺服器之間的實時數據通訊。</p>
+<p>在 CoppeliaSim 4.3.0 版本中，CoppeliaSim 提供了視覺化串流（Visualization stream）功能，它可以將 CoppeliaSim 中的 3D 串流資料傳輸到外部應用程式中，例如網頁瀏覽器。其中，"SimAddonVisualization stream.lua" 就是 CoppeliaSim 中的 Web 伺服器，負責將串流資料推送到網路中，而 threejsFrontend.js 則是網頁瀏覽器端的客戶端程式，負責接收來自 CoppeliaSim的串流資料，解讀並建立 3D 場景。</p>
+<p>simExtWS.dll 庫負責建立 WebSocket 伺服器，並將 3D 場景串流資料推送到 WebSocket 客戶端，而simAddOnVisualizationStream.lua 程式則負責控制 WebSocket 服務器的啟動、停止和傳輸串流資料的內容。threejsFrontend.js 則是網頁瀏覽器端的客戶端程式，負責接收來自 CoppeliaSim 的串流資料，解讀場景中的元件後<span>，</span>利用 three.js 建立出瀏覽器中的 3D 場景。</p>
+<p>為了讓 simAddonViaualization stream.lua 能在 SSL 模式下運作, 需要</p>
+<p>lua 5.3.5 版解譯器適用的 luasec 或 luassl:</p>
+<p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
+<p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
+<p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><br />Coppeliasim << <a href='Coppeliasim.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
         
     <!-- footer -->
       <div class="container">

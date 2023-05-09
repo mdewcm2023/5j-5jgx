@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H2">
+<meta property="head" content="H1">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -130,7 +130,7 @@ img.add_border {
                             <li><a href="./../blog/index.html">blog</a></li>
                         </ul>
                       </li>
-                     <li class='has-children'><a href='About.html'>About</a><ul class='dropdown'><li><a href='精密機械.html'>精密機械</a><li><a href='Javascript.html'>Javascript</a><li><a href='TOEIC.html'>TOEIC</a><li><a href='nginx.html'>nginx</a></li></ul><li class='has-children'><a href='Downloads.html'>Downloads</a><ul class='dropdown'><li><a href='OBS.html'>OBS</a></li></ul><li class='has-children'><a href='Upload.html'>Upload</a><ul class='dropdown'><li><a href='ax5.html'>ax5</a></li></ul><li><a href='Games.html'>Games</a><li class='has-children'><a href='w11.html'>w11</a><ul class='dropdown'><li><a href='wss.html'>wss</a><li><a href='Visualization.html'>Visualization</a><li><a href='Git.html'>Git</a><li><a href='cmsimde.html'>cmsimde</a></li></ul><li><a href='Coppeliasim.html'>Coppeliasim</a><li class='has-children'><a href='Brython.html'>Brython</a><ul class='dropdown'><li><a href='Brython_ex2.html'>Brython_ex2</a></li>
+                     <li class='has-children'><a href='About.html'>About</a><ul class='dropdown'><li class='has-children'><a href='精密機械.html'>精密機械</a><ul class='dropdown'><li><a href='程式開發.html'>程式開發</a></li></ul><li><a href='Javascript.html'>Javascript</a><li><a href='TOEIC.html'>TOEIC</a><li><a href='nginx.html'>nginx</a><li><a href='Downloads.html'>Downloads</a><li><a href='OBS.html'>OBS</a></li></ul><li class='has-children'><a href='cmsimde.html'>cmsimde</a><ul class='dropdown'><li><a href='Upload.html'>Upload</a><li><a href='ax5.html'>ax5</a><li><a href='Games.html'>Games</a></li></ul><li class='has-children'><a href='Note.html'>Note</a><ul class='dropdown'><li><a href='w11.html'>w11</a><li><a href='wss.html'>wss</a><li><a href='Visualization.html'>Visualization</a><li><a href='Git.html'>Git</a></li></ul><li class='has-children'><a href='Coppeliasim.html'>Coppeliasim</a><ul class='dropdown'><li><a href='正在解決.html'>正在解決</a></li></ul><li class='has-children'><a href='Brython.html'>Brython</a><ul class='dropdown'><li><a href='Brython_ex2.html'>Brython_ex2</a></li>
                       </ul>
                 </nav>
               </div>
@@ -141,181 +141,8 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim<br /><h1>cmsimde</h1>
-<p>準備利用 <a href="https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload">https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload</a> 中所提供的方法在 5j-5jgx 倉儲中的 cmsimde 進行修改, 以便 resize image before uploading.</p>
-<p>To resize an image before uploading it using the jQuery AXuploader, you can use the following steps:</p>
-<ol>
-<li>Load the image using the FileReader API.</li>
-<li>Create an Image object and set its src property to the result of the FileReader API.</li>
-<li>for the onload event of the Image object to fire, indicating that the image has been fully loaded.</li>
-<li>Create a canvas element and set its dimensions to the desired size of the resized image.</li>
-<li>Draw the image onto the canvas using the drawImage method, passing in the Image object as the source and the canvas as the destination.</li>
-<li>Convert the canvas to a data URI using the toDataURL method.</li>
-<li>Convert the data URI to a Blob using the dataURItoBlob function.</li>
-</ol>
-<p>Here's an example implementation of the above steps:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// define the maximum dimensions of the resized image
-const MAX_WIDTH = 800;
-const MAX_HEIGHT = 800;
-
-// define the dataURItoBlob function
-function dataURItoBlob(dataURI) {
-  const byteString = atob(dataURI.split(',')[1]);
-  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i &lt; byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([ab], { type: mimeString });
-}
-
-// handle the file upload
-$('#file-input').on('change', function() {
-  const file = this.files[0];
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = function() {
-    const img = new Image();
-    img.onload = function() {
-      let width = img.width;
-      let height = img.height;
-
-      // calculate the new dimensions of the resized image
-      if (width &gt; height) {
-        if (width &gt; MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-      } else {
-        if (height &gt; MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-      }
-
-      // create a canvas and draw the resized image onto it
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // convert the canvas to a data URI and then to a Blob
-      const dataURL = canvas.toDataURL(file.type);
-      const blob = dataURItoBlob(dataURL);
-
-      // upload the resized image using the AXuploader
-      $.axuploader({
-        url: 'upload.php',
-        data: {
-          file: blob
-        },
-        success: function(response) {
-          console.log('Upload successful:', response);
-        },
-        error: function(xhr) {
-          console.error('Upload failed:', xhr.responseText);
-        }
-      });
-    };
-    img.src = reader.result;
-  };
-});
-</pre>
-<p>In the above code, the MAX_WIDTH and MAX_HEIGHT constants define the maximum dimensions of the resized image. The dataURItoBlob function is a utility function that converts a data URI to a Blob. The change event of the file input element is handled to perform the image resizing and upload using the AXuploader.</p>
-<p>If server side is Flask based:</p>
-<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
-import base64
-import uuid
-import os
-
-app = Flask(__name__)
-
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' in request.files:
-        file = request.files['file']
-        # process the uploaded file
-        if file:
-            # decode the base64 data
-            data = base64.b64decode(request.form['file_data'])
-
-            # save the data to a file
-            filename = str(uuid.uuid4()) + '.' + file.filename.split('.')[-1]
-            with open(os.path.join('uploads', filename), 'wb') as f:
-                f.write(data)
-
-            return 'Upload successful'
-    return 'Upload failed'
-</pre>
-<p>In the above code, the Flask server defines a route /upload that receives a POST request containing the uploaded file data as a base64-encoded string in the request body. The code decodes the base64 data, generates a unique filename, and saves the data to a file in the uploads directory. The filename is returned as a response to indicate the successful upload.</p>
-<p>To make a request to this Flask endpoint from the client-side using jQuery AXuploader, you can modify the data option in the $.axuploader method to include the base64-encoded data:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">$.axuploader({
-    url: '/upload',
-    data: {
-        file_data: canvas.toDataURL(file.type).split(',')[1] // pass the base64-encoded data
-    },
-    success: function(response) {
-        console.log('Upload successful:', response);
-    },
-    error: function(xhr) {
-        console.error('Upload failed:', xhr.responseText);
-    }
-});
-</pre>
-<p>In the above code, the file_data field is added to the data option of the $.axuploader method and its value is set to the base64-encoded data URI of the resized image. This data is sent to the Flask server as the request body of the POST request. The Flask server can then decode this data and save it to a file as shown in the previous code snippet.</p>
-<p>If file is uploaded chunk by chunk:</p>
-<p>Python</p>
-<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
-import base64
-import uuid
-import os
-
-app = Flask(__name__)
-
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' in request.files:
-        file = request.files['file']
-        # process the uploaded file
-        if file:
-            # initialize the data buffer
-            data = b''
-            # read the chunks and append to the buffer
-            while True:
-                chunk = file.read(1024 * 1024) # read 1MB chunk
-                if not chunk:
-                    break
-                data += chunk
-
-            # decode the base64 data
-            data = base64.b64decode(request.form['file_data'])
-
-            # save the data to a file
-            filename = str(uuid.uuid4()) + '.' + file.filename.split('.')[-1]
-            with open(os.path.join('uploads', filename), 'wb') as f:
-                f.write(data)
-
-            return 'Upload successful'
-    return 'Upload failed'
-</pre>
-<p>Javascript:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">$.axuploader({
-    url: '/upload',
-    data: {
-        file_data: canvas.toDataURL(file.type).split(',')[1] // pass the base64-encoded data
-    },
-    chunkSize: 1024 * 1024, // upload in 1MB chunks
-    success: function(response) {
-        console.log('Upload successful:', response);
-    },
-    error: function(xhr) {
-        console.error('Upload failed:', xhr.responseText);
-    }
-});
-</pre>
-<br />Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim</div>
+    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='Upload.html'>Next</a> >> Upload<br /><h1>cmsimde</h1>
+<br />OBS << <a href='OBS.html'>Previous</a> <a href='Upload.html'>Next</a> >> Upload</div>
         
     <!-- footer -->
       <div class="container">
