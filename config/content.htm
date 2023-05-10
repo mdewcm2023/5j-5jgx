@@ -1057,7 +1057,7 @@ end
 <p><a href="https://github.com/brunoos/luasec">https://github.com/brunoos/luasec</a> </p>
 <p><a href="https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows">https://github.com/luarocks/luarocks/wiki/Installation-instructions-for-Windows</a> </p>
 <p><a href="https://luabinaries.sourceforge.net/download.html">https://luabinaries.sourceforge.net/download.html</a> </p><h3>瀏覽器串流</h3>
-<p><iframe height="480" src="https://140.130.17.108/" width="640"></iframe></p>
+<p><iframe height="480" src="https://copsim.cycu.org/" width="640"></iframe></p>
 <p>以下設定適用於 CoppeliaSim 採 https 檢視瀏覽器上的場景串流.</p>
 <p>stunnel.conf 檔案設定:</p>
 <p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TLS 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
@@ -1094,6 +1094,10 @@ key = c:\tmp\localhost.key</pre>
         this.port = port;
         this.codec = codec;
         this.websocket = new ReconnectingWebSocket(`wss://${this.host}:${this.port}`);</pre>
+<p>同樣在 threejsFrontend.js 中 line 3127:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// original port is 23050 Yen changed to 443
+var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor', {createWebSocket: url =&gt; new ReconnectingWebSocket(url)});
+</pre>
 <p>RemoteAPIclient.js 中:</p>
 <p>這也是 <span style="background-color: #ffff00;">WebSocket client 端, 以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class RemoteAPIClient {
@@ -1123,7 +1127,11 @@ key = c:\tmp\localhost.key</pre>
             wsOpts[k] = opts[k];
         this.websocket = new WebSocketAsPromised(`wss://${this.host}:${this.port}`, wsOpts);
     }</pre>
-<p></p><h1>Brython</h1>
+<p><span style="background-color: #ffff00;">simAddOnWS remote API server.lua 中 line 107</span>:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
+port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
+<p></p><h2>copsim</h2>
+<p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
