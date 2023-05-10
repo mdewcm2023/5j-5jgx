@@ -148,6 +148,11 @@ img.add_border {
 <p>因為 4.5.1 將 usrset.txt 存至 AppData  目錄下, 因此若設為可攜則必須從 C:\users\%USERNAME% 目錄中的 AppData\Roaming\CoppeliaSim 目錄取用相關設定, 因此首次設定完成後, 必須將 C:\ 中的設定存至隨身碟, 且每次啟動可攜時, 再將此設定目錄從可攜檔案中, 以 xcopy 複製到 C:\ 對應目錄.</p>
 <p>必須加入 start_ipv6.bat 中的目錄複製指令:</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">Xcopy %Disk%:\home_ipv6\AppData\Roaming\Coppeliasim C:\users\%USERNAME%\AppData\Roaming\Coppeliasim /E /H /C /I /Y</pre>
+<p><span style="background-color: #ccffcc;">這裡還需確認 4.5.1 版的 CoppeliaSim 設定檔案儲存位置為: </span></p>
+<p>C:\Users\pj2023\Documents\Roaming\CoppeliaSim</p>
+<p>抑或:</p>
+<p>C:\Users\pj2023\AppData\Roaming\CoppeliaSim</p>
+<hr/>
 <p>希望能在 https 與 wss 協定下啟動 Visualization Stream 功能</p>
 <p>由於 Coppeliasim 4.5.1 會將 usrset.txt 存入 AppData, 且只能使用 C:\users 對應的帳號下 AppData, 因此使用隨身碟中的系統, 必須動用 xcopy 將存於隨身碟的相關設定寫入 C:\ 對應區域, 才可使用滑鼠點擊開啟 CoppeliaSim, 但若以 Command 啟動 CoppeliaSim, 則部分的 plugin 無法存取, 例如: code editor plugin.</p>
 <p>Under simExtWS.dll</p>
@@ -482,8 +487,7 @@ end
 function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
-</pre>
-<br />Git << <a href='Git.html'>Previous</a> <a href='WebSocket.html'>Next</a> >> WebSocket</div>
+</pre><br />Git << <a href='Git.html'>Previous</a> <a href='WebSocket.html'>Next</a> >> WebSocket</div>
         
     <!-- footer -->
       <div class="container">

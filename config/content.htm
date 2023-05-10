@@ -701,6 +701,11 @@ def upload():
 <p>因為 4.5.1 將 usrset.txt 存至 AppData  目錄下, 因此若設為可攜則必須從 C:\users\%USERNAME% 目錄中的 AppData\Roaming\CoppeliaSim 目錄取用相關設定, 因此首次設定完成後, 必須將 C:\ 中的設定存至隨身碟, 且每次啟動可攜時, 再將此設定目錄從可攜檔案中, 以 xcopy 複製到 C:\ 對應目錄.</p>
 <p>必須加入 start_ipv6.bat 中的目錄複製指令:</p>
 <pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">Xcopy %Disk%:\home_ipv6\AppData\Roaming\Coppeliasim C:\users\%USERNAME%\AppData\Roaming\Coppeliasim /E /H /C /I /Y</pre>
+<p><span style="background-color: #ccffcc;">這裡還需確認 4.5.1 版的 CoppeliaSim 設定檔案儲存位置為: </span></p>
+<p>C:\Users\pj2023\Documents\Roaming\CoppeliaSim</p>
+<p>抑或:</p>
+<p>C:\Users\pj2023\AppData\Roaming\CoppeliaSim</p>
+<hr/>
 <p>希望能在 https 與 wss 協定下啟動 Visualization Stream 功能</p>
 <p>由於 Coppeliasim 4.5.1 會將 usrset.txt 存入 AppData, 且只能使用 C:\users 對應的帳號下 AppData, 因此使用隨身碟中的系統, 必須動用 xcopy 將存於隨身碟的相關設定寫入 C:\ 對應區域, 才可使用滑鼠點擊開啟 CoppeliaSim, 但若以 Command 啟動 CoppeliaSim, 則部分的 plugin 無法存取, 例如: code editor plugin.</p>
 <p>Under simExtWS.dll</p>
@@ -1035,8 +1040,7 @@ end
 function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
-</pre>
-<h2>WebSocket</h2>
+</pre><h2>WebSocket</h2>
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
@@ -1131,7 +1135,10 @@ var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor',
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
 port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p></p><h2>copsim</h2>
-<p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p><h1>Brython</h1>
+<p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p>
+<p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=9294">https://forum.coppeliarobotics.com/viewtopic.php?t=9294</a> </p>
+<p><a href="https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm">https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm</a> </p>
+<p>能否在 headless 啟動 Visualization Stream function and open scene throught programming?</p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
