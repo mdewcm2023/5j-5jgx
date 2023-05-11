@@ -163,7 +163,8 @@ img.add_border {
 <hr/>
 <p>因為 CoppeliaSim 透過 simExtWS.dll (Websocket extension server), simAddonVisualization stream.lua 以及 threejsFrontend.js 讓使用者可以在啟動 Visualization stream 伺服器後, 由瀏覽器的特定 port (內定為 23020) 取得 threejsFrontend.html 頁面 client 程式與 server 端傳遞場景模擬串流資料, 可以讓多人即時觀看場景模擬.</p>
 <p>內建的 simAddonVisualization stream.lua 僅讓 client 端以 HTTP request 場景物件串流資料 (即透過 ws:// 發出 requests), 若要讓 client 以 HTTPS request 發出 requests (即改透過 wss://), 則 simAddonVisualization stream.lua 必須建立 SSL 架構的 server, 這時就需要 Lua 帶有 ssl 或 luasec 模組才行.</p>
-<p>因此自行編譯 lua 原始碼的用意即在設法根據需求延伸 CoppeliaSim 的功能.</p><br />精密機械 << <a href='精密機械.html'>Previous</a> <a href='Javascript.html'>Next</a> >> Javascript</div>
+<p>因此自行編譯 lua 原始碼的用意即在設法根據需求延伸 CoppeliaSim 的功能.</p>
+<br />精密機械 << <a href='精密機械.html'>Previous</a> <a href='Javascript.html'>Next</a> >> Javascript</div>
         
     <!-- footer -->
       <div class="container">

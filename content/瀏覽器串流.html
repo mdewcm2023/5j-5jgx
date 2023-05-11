@@ -212,10 +212,12 @@ var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor',
             wsOpts[k] = opts[k];
         this.websocket = new WebSocketAsPromised(`wss://${this.host}:${this.port}`, wsOpts);
     }</pre>
-<p><span style="background-color: #ffff00;">simAddOnWS remote API server.lua 中 lin</span></p>&gt;:
+<p><span style="background-color: #ffff00;">simAddOnWS remote API server.lua 中 lin</span></p>
+<p>&gt;:</p>
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
 port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
-<p></p><br />WebSocket << <a href='WebSocket.html'>Previous</a> <a href='counter.html'>Next</a> >> counter</div>
+<p></p>
+<br />WebSocket << <a href='WebSocket.html'>Previous</a> <a href='counter.html'>Next</a> >> counter</div>
         
     <!-- footer -->
       <div class="container">
