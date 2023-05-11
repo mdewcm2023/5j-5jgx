@@ -1300,7 +1300,52 @@ document.bind("beforeunload", cleanup)
     -- set zmqRemoteApi server autoStart = true
     return tonumber(sim.getStringNamedParam('zmqRemoteApi.verbose') or '1')
 end</pre>
-<p>可讓 zmqRemoteAPI 隨系統啟動.<br/><br/></p><h1>Brython</h1>
+<p>可讓 zmqRemoteAPI 隨系統啟動.<br/><br/></p>
+<h3>Sensing</h3>
+<p>Using zmqremoteAPI to sense object:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import zmqremoteapi
+
+# Connect to CoppeliaSim through ZMQRemoteAPI
+with zmqremoteapi.RemoteAPIClient('127.0.0.1', 23000) as client:  # Replace with the appropriate IP address
+    # Start the simulation
+    client.simxStartSimulation(zmqremoteapi.simx_opmode_blocking)
+
+    # Get the handle of the proximity sensor in CoppeliaSim
+    res, sensor_handle = client.simxGetObjectHandle('ProximitySensor', zmqremoteapi.simx_opmode_blocking)  # Replace 'ProximitySensor' with the actual sensor name
+    
+    if res == zmqremoteapi.simx_return_ok:
+        # Main loop
+        while True:
+            # Read the proximity sensor's data
+            res, detection_state, detected_object_handle, _, detected_object_position = client.simxReadProximitySensor(sensor_handle, zmqremoteapi.simx_opmode_blocking)
+
+            if res == zmqremoteapi.simx_return_ok and detection_state:
+                # Get the name of the detected object
+                res, detected_object_name = client.simxGetObjectName(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                if res == zmqremoteapi.simx_return_ok:
+                    # Get the type of the detected object
+                    res, detected_object_type = client.simxGetObjectType(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                    if res == zmqremoteapi.simx_return_ok:
+                        # Get the color of the detected object
+                        res, _, detected_object_color, _, _ = client.simxGetObjectColor(detected_object_handle, -1, zmqremoteapi.simx_opmode_blocking)
+
+                        if res == zmqremoteapi.simx_return_ok:
+                            # Display the sensed object's information
+                            print("Detected Object:")
+                            print("Name:", detected_object_name)
+                            print("Type:", detected_object_type)
+                            print("Color:", detected_object_color)
+                            print("------------------")
+
+            # Delay for a short period before the next sensing
+            client.simxSpinOnce()
+
+    # Stop the simulation
+    client.simxStopSimulation(zmqremoteapi.simx_opmode_blocking)
+</pre>
+<p></p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
