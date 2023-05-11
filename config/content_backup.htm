@@ -343,6 +343,8 @@ axios.get('https://api.example.com/data')
 <p><a href="https://github.com/BrythonServer/ggame">https://github.com/BrythonServer/ggame</a></p>
 <p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p>
 <h1>Note</h1>
+<h2>Windows</h2>
+<p>Microsoft Terminal Service Client: mstsc</p>
 <h2>w11</h2>
 <p>單機場景加上計分<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) 60</p>
 <p>修改標題, 加入學員 github 帳號, 以及 w11 下的學員網頁      </p>
@@ -1269,7 +1271,16 @@ def cleanup():
 # Call the cleanup function when the Brython script is terminated
 document.bind("beforeunload", cleanup)
 </pre>
-<p></p>
+<p>If you need to implement some form of access control or authentication between the Brython client and the server-side component (such as the ZMQRemoteAPI server or any other backend service), you can consider using standard web authentication mechanisms.</p>
+<p>Here's a high-level overview of how you can approach implementing access control:</p>
+<p>Implement a server-side authentication mechanism: On the server side, you can create an authentication system that handles user registration, login, and session management. This can be implemented using a web framework or custom server-side code.</p>
+<p>Secure the server-side component: Ensure that the server-side component (e.g., ZMQRemoteAPI server or backend service) is only accessible to authenticated and authorized users. You can achieve this by validating user credentials or using access tokens for authentication.</p>
+<p>Implement authentication in the Brython client: In the Brython client, you can implement authentication features such as a login form. When the user submits their credentials, the client can send a request to the server-side authentication endpoint to authenticate the user.</p>
+<p>Manage user sessions: Once the user is authenticated, you can generate a session token or cookie on the server side and send it back to the Brython client. The client can store this token and include it in subsequent requests to the server to maintain the session.</p>
+<p>Include the authentication token in ZMQRemoteAPI requests: When making requests to the ZMQRemoteAPI server or backend service, include the authentication token in the request headers or body. The server can validate the token to ensure that the request is coming from an authenticated user.</p>
+<p>It's important to implement secure authentication practices, such as using strong passwords, secure token handling, encryption (HTTPS), and protecting against common security vulnerabilities like cross-site scripting (XSS) and cross-site request forgery (CSRF).</p>
+<p>Please note that the specific implementation details will depend on your server-side technology stack and the authentication mechanisms you choose to use. You may also need to refer to the documentation of the frameworks or libraries you are using for more specific guidance.</p>
+<p>Remember to follow best practices for secure authentication and consult with security experts if needed to ensure that your implementation meets your specific security requirements.</p>
 <hr/>
 <p><a href="/downloads/zmqRemoteApi_for_IPv6.7z">zmqRemoteApi_for_IPv6.7z</a></p>
 <p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p>
