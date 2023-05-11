@@ -1139,10 +1139,18 @@ port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=9294">https://forum.coppeliarobotics.com/viewtopic.php?t=9294</a> </p>
 <p><a href="https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm">https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm</a> </p>
 <p>能否在 headless 啟動 Visualization Stream function and open scene throught programming?</p>
-<p>You can start CoppeliaSim passing the command line parameter -GzmqRemoteApi.rpcPort=23005.</p>
-<p>Or with CoppeliaSim already started, execute sim.setNamedInt32Param('zmqRemoteApi.rpcPort',23005) (e.g. in the lua commander at bottom of screen) and then restart the ZMQ Remote API server addon.</p>
+<p>Reference:</p>
+<p style="padding-left: 30px;">You can start CoppeliaSim passing the command line parameter -GzmqRemoteApi.rpcPort=23005.</p>
+<p style="padding-left: 30px;">Or with CoppeliaSim already started, execute sim.setNamedInt32Param('zmqRemoteApi.rpcPort',23005) (e.g. in the lua commander at bottom of screen) and then restart the ZMQ Remote API server addon.</p>
 <p>若將 simAddonVisualization stream.lua 中的 autoStart 設為 true, 則 Coppeliasim 啟動後將自動執行 Visualization stream server.</p>
-<p>且若以 coppeliasim -h -s c:\tmp\mtb_robot.ttt 指定採 headless 方式啟動 (-h), 且自動執行 simulation (-s), 則可將此一指令設為 service 讓場景的執行隨操作系統啟動.</p><h1>Brython</h1>
+<p>且若以 coppeliasim -h -s c:\tmp\mtb_robot.ttt 指定採 headless 方式啟動 (-h), 且自動執行 simulation (-s), 則可將此一指令設為 service 讓場景的執行隨操作系統啟動.</p>
+<p>simAddOZMQ remoteAPI server.lua 中修改:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">function zmqRemoteApi.verbose()
+    -- return tonumber(sim.getStringNamedParam('zmqRemoteApi.verbose') or '0')
+    -- set zmqRemoteApi server autoStart = true
+    return tonumber(sim.getStringNamedParam('zmqRemoteApi.verbose') or '1')
+end</pre>
+<p>可讓 zmqRemoteAPI 隨系統啟動.<br/><br/></p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
