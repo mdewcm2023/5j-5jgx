@@ -1135,6 +1135,143 @@ var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor',
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
 port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p></p><h2>copsim</h2>
+<p>Flutter app and Coppeliasim:</p>
+<p style="padding-left: 30px;">Establish communication from the Flutter app: In your Flutter app, you'll need to establish a connection to the ZMQRemoteAPI server using the appropriate ZeroMQ library for Flutter. One popular library is zeromq.dart, which provides ZeroMQ bindings for Dart.</p>
+<pre class="brush:dart;auto-links:false;toolbar:false" contenteditable="false">import 'package:zeromq/zeromq.dart';
+
+void main() async {
+  // Connect to the ZMQRemoteAPI server
+  final context = ZContext();
+  final requester = ZSocket(context, ZSocketType.req);
+  await requester.connect('tcp://localhost:23000'); // Adjust the address and port as per your setup
+
+  // Send a command to CoppeliaSim
+  final command = 'simxStartSimulation'; // Example command to start the simulation
+  final commandBytes = command.codeUnits;
+  await requester.send(ZFrame.fromBytes(commandBytes));
+
+  // Receive the response from CoppeliaSim
+  final response = await requester.receive();
+  final responseBytes = response.first.bytes;
+  final responseString = String.fromCharCodes(responseBytes);
+  print('Response: $responseString');
+
+  // Cleanup
+  await requester.close();
+  context.destroy();
+}
+</pre>
+<p>Brython use Javascript ZMQ:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, window
+
+# Use the JS API to access the ZWS library
+# https://github.com/zeromq/zwssock
+zws = window.ZWS
+
+# Create a ZWS socket and connect to the ZMQRemoteAPI server in CoppeliaSim
+socket = zws.createSocket('ws://localhost:23000')  # Adjust the address and port as per your setup
+socket.onopen = lambda event: on_socket_open(event)
+
+# Handle socket opening
+def on_socket_open(event):
+    print("WebSocket connection established")
+    
+    # Send the ZMQRemoteAPI commands to control the BubbleRob robot
+    socket.send("simxStartSimulation")
+    socket.send("simxSynchronous(True)")
+    socket.send("handle = simxGetObjectHandle('BubbleRob', -1)[1]")
+    socket.send("simxSetJointTargetVelocity(handle, 0.5, simx_opmode_oneshot_wait)")
+    
+    # Move the robot in a circular path
+    for _ in range(500):  # Adjust the number of iterations as needed
+        socket.send("simxSynchronousTrigger()")
+    
+    # Stop the simulation
+    socket.send("simxStopSimulation")
+
+# Handle socket messages
+def on_socket_message(event):
+    print("Received message:", event.data)
+
+# Set the message and close handlers
+socket.onmessage = on_socket_message
+socket.onclose = lambda event: print("WebSocket connection closed")
+
+# Cleanup
+def cleanup():
+    socket.close()
+
+# Call the cleanup function when the Brython script is terminated
+document.bind("beforeunload", cleanup)
+</pre>
+<p>Lead BubbleRob move in circle:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, window
+
+# Use the JS API to access the ZWS library
+zws = window.ZWS
+
+# Create a ZWS socket and connect to the ZMQRemoteAPI server in CoppeliaSim
+socket = zws.createSocket('ws://localhost:23000')  # Adjust the address and port as per your setup
+socket.onopen = lambda event: on_socket_open(event)
+
+# Handle socket opening
+def on_socket_open(event):
+    print("WebSocket connection established")
+
+    # Send the ZMQRemoteAPI commands to control the BubbleRob robot
+    socket.send("simxStartSimulation")
+    socket.send("simxSynchronous(True)")
+    socket.send("handle = simxGetObjectHandle('BubbleRob', -1)[1]")
+    
+    # Define the circle radius and target velocity
+    radius = 0.5  # Adjust the circle radius as needed
+    velocity = 0.5  # Adjust the target velocity as needed
+
+    # Calculate the linear velocity and angular velocity for the circular path
+    linear_velocity = velocity
+    angular_velocity = linear_velocity / radius
+    
+    # Calculate the time required to complete the circular path
+    circumference = 2 * 3.14159 * radius
+    time = circumference / linear_velocity
+
+    # Set the robot's target velocities for linear and angular motion
+    socket.send(f"simxSetJointTargetVelocity(handle, {linear_velocity}, simx_opmode_oneshot_wait)")
+    socket.send(f"simxSetJointTargetVelocity(handle + 1, {angular_velocity}, simx_opmode_oneshot_wait)")
+
+    # Move the robot in a circular path for the specified time
+    socket.send(f"simxPauseCommunication(True)")
+    socket.send(f"simxSynchronousTrigger()")
+    socket.send(f"simxPauseCommunication(False)")
+
+    for _ in range(int(time * 1000)):  # Adjust the time scale as needed
+        socket.send("simxSynchronousTrigger()")
+
+    # Stop the robot's motion
+    socket.send(f"simxSetJointTargetVelocity(handle, 0, simx_opmode_oneshot_wait)")
+    socket.send(f"simxSetJointTargetVelocity(handle + 1, 0, simx_opmode_oneshot_wait)")
+
+    # Stop the simulation
+    socket.send("simxStopSimulation")
+
+# Handle socket messages
+def on_socket_message(event):
+    print("Received message:", event.data)
+
+# Set the message and close handlers
+socket.onmessage = on_socket_message
+socket.onclose = lambda event: print("WebSocket connection closed")
+
+# Cleanup
+def cleanup():
+    socket.close()
+
+# Call the cleanup function when the Brython script is terminated
+document.bind("beforeunload", cleanup)
+</pre>
+<p></p>
+<hr/>
+<p><a href="/downloads/zmqRemoteApi_for_IPv6.7z">zmqRemoteApi_for_IPv6.7z</a></p>
 <p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p>
 <p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=9294">https://forum.coppeliarobotics.com/viewtopic.php?t=9294</a> </p>
 <p><a href="https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm">https://coppeliarobotics.com/helpFiles/en/dataVisualizationAndOutput.htm</a> </p>

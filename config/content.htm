@@ -1135,6 +1135,151 @@ var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor',
 <pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
 port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p></p><h2>copsim</h2>
+<p>Flutter app and Coppeliasim:</p>
+<p style="padding-left: 30px;">Establish communication from the Flutter app: In your Flutter app, you'll need to establish a connection to the ZMQRemoteAPI server using the appropriate ZeroMQ library for Flutter. One popular library is zeromq.dart, which provides ZeroMQ bindings for Dart.</p>
+<pre class="brush:dart;auto-links:false;toolbar:false" contenteditable="false">import 'package:zeromq/zeromq.dart';
+
+void main() async {
+  // Connect to the ZMQRemoteAPI server
+  final context = ZContext();
+  final requester = ZSocket(context, ZSocketType.req);
+  await requester.connect('tcp://localhost:23000'); // Adjust the address and port as per your setup
+
+  // Send a command to CoppeliaSim
+  final command = 'simxStartSimulation'; // Example command to start the simulation
+  final commandBytes = command.codeUnits;
+  await requester.send(ZFrame.fromBytes(commandBytes));
+
+  // Receive the response from CoppeliaSim
+  final response = await requester.receive();
+  final responseBytes = response.first.bytes;
+  final responseString = String.fromCharCodes(responseBytes);
+  print('Response: $responseString');
+
+  // Cleanup
+  await requester.close();
+  context.destroy();
+}
+</pre>
+<p>Brython use Javascript ZMQ:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, window
+
+# Use the JS API to access the ZWS library
+# https://github.com/zeromq/zwssock
+zws = window.ZWS
+
+# Create a ZWS socket and connect to the ZMQRemoteAPI server in CoppeliaSim
+socket = zws.createSocket('ws://localhost:23000')  # Adjust the address and port as per your setup
+socket.onopen = lambda event: on_socket_open(event)
+
+# Handle socket opening
+def on_socket_open(event):
+    print("WebSocket connection established")
+    
+    # Send the ZMQRemoteAPI commands to control the BubbleRob robot
+    socket.send("simxStartSimulation")
+    socket.send("simxSynchronous(True)")
+    socket.send("handle = simxGetObjectHandle('BubbleRob', -1)[1]")
+    socket.send("simxSetJointTargetVelocity(handle, 0.5, simx_opmode_oneshot_wait)")
+    
+    # Move the robot in a circular path
+    for _ in range(500):  # Adjust the number of iterations as needed
+        socket.send("simxSynchronousTrigger()")
+    
+    # Stop the simulation
+    socket.send("simxStopSimulation")
+
+# Handle socket messages
+def on_socket_message(event):
+    print("Received message:", event.data)
+
+# Set the message and close handlers
+socket.onmessage = on_socket_message
+socket.onclose = lambda event: print("WebSocket connection closed")
+
+# Cleanup
+def cleanup():
+    socket.close()
+
+# Call the cleanup function when the Brython script is terminated
+document.bind("beforeunload", cleanup)
+</pre>
+<p>Lead BubbleRob move in circle:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from browser import document, window
+
+# Use the JS API to access the ZWS library
+zws = window.ZWS
+
+# Create a ZWS socket and connect to the ZMQRemoteAPI server in CoppeliaSim
+socket = zws.createSocket('ws://localhost:23000')  # Adjust the address and port as per your setup
+socket.onopen = lambda event: on_socket_open(event)
+
+# Handle socket opening
+def on_socket_open(event):
+    print("WebSocket connection established")
+
+    # Send the ZMQRemoteAPI commands to control the BubbleRob robot
+    socket.send("simxStartSimulation")
+    socket.send("simxSynchronous(True)")
+    socket.send("handle = simxGetObjectHandle('BubbleRob', -1)[1]")
+    
+    # Define the circle radius and target velocity
+    radius = 0.5  # Adjust the circle radius as needed
+    velocity = 0.5  # Adjust the target velocity as needed
+
+    # Calculate the linear velocity and angular velocity for the circular path
+    linear_velocity = velocity
+    angular_velocity = linear_velocity / radius
+    
+    # Calculate the time required to complete the circular path
+    circumference = 2 * 3.14159 * radius
+    time = circumference / linear_velocity
+
+    # Set the robot's target velocities for linear and angular motion
+    socket.send(f"simxSetJointTargetVelocity(handle, {linear_velocity}, simx_opmode_oneshot_wait)")
+    socket.send(f"simxSetJointTargetVelocity(handle + 1, {angular_velocity}, simx_opmode_oneshot_wait)")
+
+    # Move the robot in a circular path for the specified time
+    socket.send(f"simxPauseCommunication(True)")
+    socket.send(f"simxSynchronousTrigger()")
+    socket.send(f"simxPauseCommunication(False)")
+
+    for _ in range(int(time * 1000)):  # Adjust the time scale as needed
+        socket.send("simxSynchronousTrigger()")
+
+    # Stop the robot's motion
+    socket.send(f"simxSetJointTargetVelocity(handle, 0, simx_opmode_oneshot_wait)")
+    socket.send(f"simxSetJointTargetVelocity(handle + 1, 0, simx_opmode_oneshot_wait)")
+
+    # Stop the simulation
+    socket.send("simxStopSimulation")
+
+# Handle socket messages
+def on_socket_message(event):
+    print("Received message:", event.data)
+
+# Set the message and close handlers
+socket.onmessage = on_socket_message
+socket.onclose = lambda event: print("WebSocket connection closed")
+
+# Cleanup
+def cleanup():
+    socket.close()
+
+# Call the cleanup function when the Brython script is terminated
+document.bind("beforeunload", cleanup)
+</pre>
+<p>If you need to implement some form of access control or authentication between the Brython client and the server-side component (such as the ZMQRemoteAPI server or any other backend service), you can consider using standard web authentication mechanisms.</p>
+<p>Here's a high-level overview of how you can approach implementing access control:</p>
+<p>Implement a server-side authentication mechanism: On the server side, you can create an authentication system that handles user registration, login, and session management. This can be implemented using a web framework or custom server-side code.</p>
+<p>Secure the server-side component: Ensure that the server-side component (e.g., ZMQRemoteAPI server or backend service) is only accessible to authenticated and authorized users. You can achieve this by validating user credentials or using access tokens for authentication.</p>
+<p>Implement authentication in the Brython client: In the Brython client, you can implement authentication features such as a login form. When the user submits their credentials, the client can send a request to the server-side authentication endpoint to authenticate the user.</p>
+<p>Manage user sessions: Once the user is authenticated, you can generate a session token or cookie on the server side and send it back to the Brython client. The client can store this token and include it in subsequent requests to the server to maintain the session.</p>
+<p>Include the authentication token in ZMQRemoteAPI requests: When making requests to the ZMQRemoteAPI server or backend service, include the authentication token in the request headers or body. The server can validate the token to ensure that the request is coming from an authenticated user.</p>
+<p>It's important to implement secure authentication practices, such as using strong passwords, secure token handling, encryption (HTTPS), and protecting against common security vulnerabilities like cross-site scripting (XSS) and cross-site request forgery (CSRF).</p>
+<p>Please note that the specific implementation details will depend on your server-side technology stack and the authentication mechanisms you choose to use. You may also need to refer to the documentation of the frameworks or libraries you are using for more specific guidance.</p>
+<p>Remember to follow best practices for secure authentication and consult with security experts if needed to ensure that your implementation meets your specific security requirements.</p>
+<hr/>
 <p><a href="/downloads/zmqRemoteApi_for_IPv6.7z">zmqRemoteApi_for_IPv6.7z</a></p>
 <p>準備在 151 建立 copsim.cycu.org 10ff:151::1</p>
 <p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=9294">https://forum.coppeliarobotics.com/viewtopic.php?t=9294</a> </p>
