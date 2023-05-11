@@ -24,7 +24,7 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>need to chmod u+x ./acp</p>
 <p></p><h2>精密機械</h2>
 <p><a href="https://github.com/KmolYuan">學長</a> <a href="https://asmedigitalcollection.asme.org/IDETC-CIE/proceedings/IDETC-CIE2021/85444/V08AT08A015/1128605">2021 年發表的論文</a></p>
-<h3>程式開發</h3>
+<p><span dir="ltr" role="presentation" style="left: 26.35%; top: 15.64%; font-size: calc(var(--scale-factor)*14.35px); font-family: sans-serif; transform: scaleX(0.978194);"><a href="https://hal.science/hal-02874107/document">Appropriate Synthesis of the Four-Bar Linkage</a></span></p><h3>程式開發</h3>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EUd5wZF9jSdCtrDkLvEfyj4Bq8pkV0b3kKZ1fxeNMhC8qg?e=slvduQ">下載 MSYS2 and Cmake.7z</a> (下載 3.47GB 解開後 12.6GB, for @nfu users only)</p>
 <p>在計算機程式開發過程中學習英文、演算法、資料結構與資料庫 (SQLite and PostgreSQL)</p>
 <p style="padding-left: 30px;"><a href="https://www.cs.bham.ac.uk/~jxb/DSA/dsa.pdf">Data structures and algorithms</a></p>
@@ -1301,7 +1301,51 @@ document.bind("beforeunload", cleanup)
     return tonumber(sim.getStringNamedParam('zmqRemoteApi.verbose') or '1')
 end</pre>
 <p>可讓 zmqRemoteAPI 隨系統啟動.<br/><br/></p>
-<h3>Sensing</h3><h1>Brython</h1>
+<h3>Sensing</h3>
+<p>Using zmqremoteAPI to sense object:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import zmqremoteapi
+
+# Connect to CoppeliaSim through ZMQRemoteAPI
+with zmqremoteapi.RemoteAPIClient('127.0.0.1', 23000) as client:  # Replace with the appropriate IP address
+    # Start the simulation
+    client.simxStartSimulation(zmqremoteapi.simx_opmode_blocking)
+
+    # Get the handle of the proximity sensor in CoppeliaSim
+    res, sensor_handle = client.simxGetObjectHandle('ProximitySensor', zmqremoteapi.simx_opmode_blocking)  # Replace 'ProximitySensor' with the actual sensor name
+    
+    if res == zmqremoteapi.simx_return_ok:
+        # Main loop
+        while True:
+            # Read the proximity sensor's data
+            res, detection_state, detected_object_handle, _, detected_object_position = client.simxReadProximitySensor(sensor_handle, zmqremoteapi.simx_opmode_blocking)
+
+            if res == zmqremoteapi.simx_return_ok and detection_state:
+                # Get the name of the detected object
+                res, detected_object_name = client.simxGetObjectName(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                if res == zmqremoteapi.simx_return_ok:
+                    # Get the type of the detected object
+                    res, detected_object_type = client.simxGetObjectType(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                    if res == zmqremoteapi.simx_return_ok:
+                        # Get the color of the detected object
+                        res, _, detected_object_color, _, _ = client.simxGetObjectColor(detected_object_handle, -1, zmqremoteapi.simx_opmode_blocking)
+
+                        if res == zmqremoteapi.simx_return_ok:
+                            # Display the sensed object's information
+                            print("Detected Object:")
+                            print("Name:", detected_object_name)
+                            print("Type:", detected_object_type)
+                            print("Color:", detected_object_color)
+                            print("------------------")
+
+            # Delay for a short period before the next sensing
+            client.simxSpinOnce()
+
+    # Stop the simulation
+    client.simxStopSimulation(zmqremoteapi.simx_opmode_blocking)
+</pre>
+<p></p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
