@@ -141,11 +141,67 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">nginx << <a href='nginx.html'>Previous</a> <a href='OBS.html'>Next</a> >> OBS<br /><h1>Downloads</h1>
-<p>OBS: <a href="https://obsproject.com/download">https://obsproject.com/download</a></p>
-<p>Virtualbox: <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a></p>
-<p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EV5lw40RXvNFue1Cr2sivioBuOj_QA5KzAxDMU0Mkf7z8w?e=NtOJeN">wcm_portable_w2-5.7z</a> (下載 220MB 解開後 880MB)</p>
-<br />nginx << <a href='nginx.html'>Previous</a> <a href='OBS.html'>Next</a> >> OBS</div>
+    <div id="tipue_search_content">Sensing << <a href='Sensing.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>Brython_ws</h1>
+<p><a href="https://www.piesocket.com/websocket-tester">Brython WebSocket tester</a></p>
+<script src="./../cmsimde/static/brython.js"></script>
+<script src="./../cmsimde/static/brython_stdlib.js"></script>
+<!-- 啟動 Brython -->
+<p>
+<script>
+window.onload=function(){
+brython({debug:1});
+}
+</script>
+<button id="openbtn">Open connection</button> <br/><input id="data" type="text"/><button disabled="disabled" id="sendbtn">Send</button></p>
+<p><button disabled="disabled" id="closebtn">Close connection</button>
+<script type="text/python">
+from browser import bind, document, websocket
+from browser.widgets.dialog import InfoDialog
+
+def on_open(evt):
+    document['sendbtn'].disabled = False
+    document['closebtn'].disabled = False
+    document['openbtn'].disabled = True
+    InfoDialog("websocket", f"Connection open")    
+
+def on_message(evt):
+    # message received from server
+    InfoDialog("websocket", f"Message received : {evt.data}")
+
+def on_close(evt):
+    # websocket is closed
+    InfoDialog("websocket", "Connection is closed")
+    document['openbtn'].disabled = False
+    document['closebtn'].disabled = True
+    document['sendbtn'].disabled = True
+
+ws = None
+
+@bind('#openbtn', 'click')
+def _open(ev):
+    if not websocket.supported:
+        InfoDialog("websocket", "WebSocket is not supported by your browser")
+        return
+    global ws
+    # open a web socket
+    ws = websocket.WebSocket("wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self")
+    # bind functions to web socket events
+    ws.bind('open',on_open)
+    ws.bind('message',on_message)
+    ws.bind('close',on_close)
+
+@bind('#sendbtn', 'click')
+def send(ev):
+    data = document["data"].value
+    if data:
+        ws.send(data)
+
+@bind('#closebtn', 'click')
+def close_connection(ev):
+    ws.close()
+    document['openbtn'].disabled = False
+</script>
+</p><br />Sensing << <a href='Sensing.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
         
     <!-- footer -->
       <div class="container">

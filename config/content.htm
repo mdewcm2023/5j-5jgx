@@ -1152,8 +1152,19 @@ var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor',
 port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p></p>
 <h2>counter</h2>
+<p><a href="https://www.thingiverse.com/thing:5452444/files">https://www.thingiverse.com/thing:5452444/files</a> </p>
 <p><a href="https://woodgears.ca/counter/">https://woodgears.ca/counter/</a></p>
-<h2>copsim</h2>
+<p><a href="https://youtu.be/lwt8QujQv5s">https://youtu.be/lwt8QujQv5s</a> </p>
+<p><a href="https://www.printables.com/model/76018-mechanical-tally-counter-50/files">https://www.printables.com/model/76018-mechanical-tally-counter-50/files</a> </p>
+<p><a href="https://youtu.be/fHxMHOnwhCA">https://youtu.be/fHxMHOnwhCA</a> </p>
+<p>以下 jpg 檔案取自:</p>
+<p style="padding-left: 30px;"><a href="https://www.myminifactory.com/object/3d-print-mechanical-counter-31952">https://www.myminifactory.com/object/3d-print-mechanical-counter-31952</a> </p>
+<p><img alt="" height="400" src="/images/counter1.jpg" width="400"/><img alt="" height="400" src="/images/counter2.jpg" width="400"/></p>
+<p><img alt="" height="400" src="/images/counter3.jpg" width="400"/></p>
+<p><img alt="" height="400" src="/images/counter4.jpg" width="400"/></p>
+<p><img alt="" height="400" src="/images/counter5.jpg" width="400"/></p>
+<p><img alt="" height="400" src="/images/counter6.jpg" width="400"/></p>
+<p><img alt="" height="400" src="/images/counter7.jpg" width="400"/></p><h2>copsim</h2>
 <p>Flutter app and Coppeliasim:</p>
 <p style="padding-left: 30px;">Establish communication from the Flutter app: In your Flutter app, you'll need to establish a connection to the ZMQRemoteAPI server using the appropriate ZeroMQ library for Flutter. One popular library is zeromq.dart, which provides ZeroMQ bindings for Dart.</p>
 <pre class="brush:dart;auto-links:false;toolbar:false" contenteditable="false">import 'package:zeromq/zeromq.dart';
@@ -1360,8 +1371,67 @@ with zmqremoteapi.RemoteAPIClient('127.0.0.1', 23000) as client:  # Replace with
     # Stop the simulation
     client.simxStopSimulation(zmqremoteapi.simx_opmode_blocking)
 </pre>
-<p></p>
-<h1>Brython</h1>
+<h2>Brython_ws</h2>
+<p><a href="https://www.piesocket.com/websocket-tester">Brython WebSocket tester</a></p>
+<script src="/static/brython.js"></script>
+<script src="/static/brython_stdlib.js"></script>
+<!-- 啟動 Brython -->
+<p>
+<script>
+window.onload=function(){
+brython({debug:1});
+}
+</script>
+<button id="openbtn">Open connection</button> <br/><input id="data" type="text"/><button disabled="disabled" id="sendbtn">Send</button></p>
+<p><button disabled="disabled" id="closebtn">Close connection</button>
+<script type="text/python">
+from browser import bind, document, websocket
+from browser.widgets.dialog import InfoDialog
+
+def on_open(evt):
+    document['sendbtn'].disabled = False
+    document['closebtn'].disabled = False
+    document['openbtn'].disabled = True
+    InfoDialog("websocket", f"Connection open")    
+
+def on_message(evt):
+    # message received from server
+    InfoDialog("websocket", f"Message received : {evt.data}")
+
+def on_close(evt):
+    # websocket is closed
+    InfoDialog("websocket", "Connection is closed")
+    document['openbtn'].disabled = False
+    document['closebtn'].disabled = True
+    document['sendbtn'].disabled = True
+
+ws = None
+
+@bind('#openbtn', 'click')
+def _open(ev):
+    if not websocket.supported:
+        InfoDialog("websocket", "WebSocket is not supported by your browser")
+        return
+    global ws
+    # open a web socket
+    ws = websocket.WebSocket("wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self")
+    # bind functions to web socket events
+    ws.bind('open',on_open)
+    ws.bind('message',on_message)
+    ws.bind('close',on_close)
+
+@bind('#sendbtn', 'click')
+def send(ev):
+    data = document["data"].value
+    if data:
+        ws.send(data)
+
+@bind('#closebtn', 'click')
+def close_connection(ev):
+    ws.close()
+    document['openbtn'].disabled = False
+</script>
+</p><h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
