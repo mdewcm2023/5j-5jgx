@@ -351,7 +351,59 @@ axios.get('https://api.example.com/data')
 <p><a href="https://github.com/BrythonServer/ggame">https://github.com/BrythonServer/ggame</a></p>
 <p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p>
 <h1>Note</h1>
-<h2>Windows</h2>
+<p><a href="https://github.com/paroga/cbor-js">https://github.com/paroga/cbor-js</a> </p>
+<p><a href="https://github.com/uuidjs/uuid">https://github.com/uuidjs/uuid</a> </p>
+<p><a href="https://github.com/zeromq/zeromq.js/">https://github.com/zeromq/zeromq.js/</a> </p>
+<script src="/static/brython.js"></script>
+<script src="/static/brython_stdlib.js"></script>
+<!-- 啟動 Brython -->
+<p>
+<script>
+window.onload=function(){
+brython({debug:1});
+}
+</script>
+<script type="text/python">
+from browser import document, console, window
+
+# Define the CoppeliaSim connection parameters
+host = '127.0.0.1'
+port = 23000
+
+# Connect to CoppeliaSim
+def connect():
+    window.simulator = window.BVRemoteAPI.connect(host, port)
+    if window.simulator.is_connected():
+        console.log('Connected to CoppeliaSim')
+    else:
+        console.log('Failed to connect to CoppeliaSim')
+
+# Disconnect from CoppeliaSim
+def disconnect():
+    if hasattr(window, 'simulator') and window.simulator.is_connected():
+        window.simulator.disconnect()
+        console.log('Disconnected from CoppeliaSim')
+
+# Send a command to CoppeliaSim and get the response
+def send_command(command):
+    if hasattr(window, 'simulator') and window.simulator.is_connected():
+        res, ret_ints, ret_floats, ret_strings, ret_buffer = window.simulator.simxCallScriptFunction(
+            '', window.simulator.sim_scripttype_childscript, 'pyrep', command, [], [], [], '')
+        if res == 0:
+            console.log('Command executed successfully')
+            return ret_strings[0]  # Assuming a string response
+        else:
+            console.log('Failed to execute command:', res)
+    else:
+        console.log('Not connected to CoppeliaSim')
+
+# Example usage
+connect()
+response = send_command('simGetObjectName(0)')
+console.log('Response:', response)
+disconnect()
+</script>
+</p><h2>Windows</h2>
 <p>Microsoft Terminal Service Client: mstsc</p>
 <h2>w11</h2>
 <p>單機場景加上計分<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) 60</p>
@@ -707,7 +759,91 @@ def upload():
     }
 });
 </pre>
-<h1>Coppeliasim</h1>
+<h1>zmqRemoteApi</h1>
+<script src="https://cdn.jsdelivr.net/npm/zmq@2.15.3/index.min.js"></script>
+<script>
+const zmq = require('zeromq');
+
+// Set up the ZMQ socket connection
+const socket = zmq.socket('req');
+const port = 23000; // Port number used by the ZMQ Remote API server
+const ipAddress = '[2001:288:6004:17:10ff::5]'; // IP address of the machine running the ZMQ Remote API server
+const connectionAddress = `tcp://${ipAddress}:${port}`;
+socket.connect(connectionAddress);
+
+// Function to send a request to the ZMQ Remote API server
+function sendRequest(request) {
+  return new Promise((resolve, reject) => {
+    socket.send(JSON.stringify(request));
+    socket.on('message', (response) => {
+      resolve(JSON.parse(response.toString()));
+    });
+  });
+}
+
+// Get the object handle from the ZMQ Remote API server
+async function getObject(objectName) {
+  const request = {
+    cmd: 'sim.getObject',
+    objectName: objectName
+  };
+
+  const response = await sendRequest(request);
+  return response.handle;
+}
+
+// Set the initial position of the cube
+const initialPosition = [0, 0, 0];
+const cubeHandle = await getObject('/cube');
+await sendRequest({
+  cmd: 'sim.setObjectPosition',
+  handle: cubeHandle,
+  relativeToObjectHandle: -1,
+  position: initialPosition
+});
+
+// Set the increment value for each movement
+const increment = 0.1;
+
+// Listen for keydown events
+document.addEventListener('keydown', async (event) => {
+  const key = event.key;
+
+  // Move the cube based on the arrow keys
+  switch (key) {
+    case 'ArrowUp':
+      await moveCube([0, increment, 0]);
+      break;
+    case 'ArrowDown':
+      await moveCube([0, -increment, 0]);
+      break;
+    case 'ArrowLeft':
+      await moveCube([-increment, 0, 0]);
+      break;
+    case 'ArrowRight':
+      await moveCube([increment, 0, 0]);
+      break;
+  }
+});
+
+// Function to move the cube by a given translation vector
+async function moveCube(translation) {
+  const currentPosition = await sendRequest({
+    cmd: 'sim.getObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1
+  });
+
+  const newPosition = currentPosition.position.map((coord, index) => coord + translation[index]);
+
+  await sendRequest({
+    cmd: 'sim.setObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1,
+    position: newPosition
+  });
+}
+</script><h1>Coppeliasim</h1>
 <p>當使用按下 Modules -&gt; Connectivity -&gt;Visualization stream 時, 系統呼叫位於 CoppeliaSim 套件根目錄中的 simAddOnVisualization stream.lua 檔案執行. 其中的 http server 是由 .lua 程式中的 function onWSHTTP(server,connection,resource,data) </p>
 <p><a href="https://nfuedu.sharepoint.com/:u:/s/cad2022/EWdB5MhlZRJKjt5UiNRebR8BN6_AmU0IX1HC7Y6dnRBzQw?e=dLPcDi">Download CoppeliasimEdu_4.3.0rev12.7z</a> (for @nfu users only)</p>
 <p><a href="https://nfuedu-my.sharepoint.com/:u:/g/personal/yen_nfu_edu_tw/EQfam1spz4JHqczkc1uN4H0BJu2jvs07GlPmhUHyMOTuXA?e=cnZSjM">Download CoppeliaSimEdu_4.5.1rev4.7z</a> (for@nfu users only)</p>
@@ -1053,8 +1189,7 @@ end
 function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
-</pre>
-<h2>WebSocket</h2>
+</pre><h2>WebSocket</h2>
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
@@ -1372,6 +1507,7 @@ with zmqremoteapi.RemoteAPIClient('127.0.0.1', 23000) as client:  # Replace with
     client.simxStopSimulation(zmqremoteapi.simx_opmode_blocking)
 </pre>
 <h2>Brython_ws</h2>
+<p><a href="https://www.piesocket.com/websocket-tester">Brython WebSocket tester</a></p>
 <script src="/static/brython.js"></script>
 <script src="/static/brython_stdlib.js"></script>
 <!-- 啟動 Brython -->

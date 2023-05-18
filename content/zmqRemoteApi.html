@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H2">
+<meta property="head" content="H1">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -141,188 +141,91 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">Leo Editor << <a href='Leo Editor.html'>Previous</a> <a href='zmqRemoteApi.html'>Next</a> >> zmqRemoteApi<br /><h1>Git</h1>
-<p>測試在 acp 中加入 public_html 目錄中倉儲的 git pull 指令執行</p>
-<p>fatal:  Could not resolve host: github.com</p>
-<p>發生原因: 目前的網路設定無法與 github.com 網站連線</p>
-<p>解決方法:</p>
-<p style="padding-left: 30px;">若使用 https 連線, 請檢查 home_ipv6 目錄下的 .gitconfig, 可能沒有設定 http.proxy</p>
-<p style="padding-left: 30px;">若使用 SSH 連線, 請檢查 Putty 設定的 session 中 Proxy, 可能沒有設定 http 對應的代理主機</p>
-<h4>cmsimde</h4>
-<p>準備利用 <a href="https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload">https://stackoverflow.com/questions/23945494/use-html5-to-resize-an-image-before-upload</a> 中所提供的方法在 5j-5jgx 倉儲中的 cmsimde 進行修改, 以便 resize image before uploading.</p>
-<p>To resize an image before uploading it using the jQuery AXuploader, you can use the following steps:</p>
-<ol>
-<li>Load the image using the FileReader API.</li>
-<li>Create an Image object and set its src property to the result of the FileReader API.</li>
-<li>for the onload event of the Image object to fire, indicating that the image has been fully loaded.</li>
-<li>Create a canvas element and set its dimensions to the desired size of the resized image.</li>
-<li>Draw the image onto the canvas using the drawImage method, passing in the Image object as the source and the canvas as the destination.</li>
-<li>Convert the canvas to a data URI using the toDataURL method.</li>
-<li>Convert the data URI to a Blob using the dataURItoBlob function.</li>
-</ol>
-<p>Here's an example implementation of the above steps:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// define the maximum dimensions of the resized image
-const MAX_WIDTH = 800;
-const MAX_HEIGHT = 800;
+    <div id="tipue_search_content">Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim<br /><h1>zmqRemoteApi</h1>
+<script src="https://cdn.jsdelivr.net/npm/zmq@2.15.3/index.min.js"></script>
+<script>
+const zmq = require('zeromq');
 
-// define the dataURItoBlob function
-function dataURItoBlob(dataURI) {
-  const byteString = atob(dataURI.split(',')[1]);
-  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i &lt; byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  return new Blob([ab], { type: mimeString });
+// Set up the ZMQ socket connection
+const socket = zmq.socket('req');
+const port = 23000; // Port number used by the ZMQ Remote API server
+const ipAddress = '[2001:288:6004:17:10ff::5]'; // IP address of the machine running the ZMQ Remote API server
+const connectionAddress = `tcp://${ipAddress}:${port}`;
+socket.connect(connectionAddress);
+
+// Function to send a request to the ZMQ Remote API server
+function sendRequest(request) {
+  return new Promise((resolve, reject) => {
+    socket.send(JSON.stringify(request));
+    socket.on('message', (response) => {
+      resolve(JSON.parse(response.toString()));
+    });
+  });
 }
 
-// handle the file upload
-$('#file-input').on('change', function() {
-  const file = this.files[0];
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = function() {
-    const img = new Image();
-    img.onload = function() {
-      let width = img.width;
-      let height = img.height;
-
-      // calculate the new dimensions of the resized image
-      if (width &gt; height) {
-        if (width &gt; MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-      } else {
-        if (height &gt; MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-      }
-
-      // create a canvas and draw the resized image onto it
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // convert the canvas to a data URI and then to a Blob
-      const dataURL = canvas.toDataURL(file.type);
-      const blob = dataURItoBlob(dataURL);
-
-      // upload the resized image using the AXuploader
-      $.axuploader({
-        url: 'upload.php',
-        data: {
-          file: blob
-        },
-        success: function(response) {
-          console.log('Upload successful:', response);
-        },
-        error: function(xhr) {
-          console.error('Upload failed:', xhr.responseText);
-        }
-      });
-    };
-    img.src = reader.result;
+// Get the object handle from the ZMQ Remote API server
+async function getObject(objectName) {
+  const request = {
+    cmd: 'sim.getObject',
+    objectName: objectName
   };
+
+  const response = await sendRequest(request);
+  return response.handle;
+}
+
+// Set the initial position of the cube
+const initialPosition = [0, 0, 0];
+const cubeHandle = await getObject('/cube');
+await sendRequest({
+  cmd: 'sim.setObjectPosition',
+  handle: cubeHandle,
+  relativeToObjectHandle: -1,
+  position: initialPosition
 });
-</pre>
-<p>In the above code, the MAX_WIDTH and MAX_HEIGHT constants define the maximum dimensions of the resized image. The dataURItoBlob function is a utility function that converts a data URI to a Blob. The change event of the file input element is handled to perform the image resizing and upload using the AXuploader.</p>
-<p>If server side is Flask based:</p>
-<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
-import base64
-import uuid
-import os
 
-app = Flask(__name__)
+// Set the increment value for each movement
+const increment = 0.1;
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' in request.files:
-        file = request.files['file']
-        # process the uploaded file
-        if file:
-            # decode the base64 data
-            data = base64.b64decode(request.form['file_data'])
+// Listen for keydown events
+document.addEventListener('keydown', async (event) => {
+  const key = event.key;
 
-            # save the data to a file
-            filename = str(uuid.uuid4()) + '.' + file.filename.split('.')[-1]
-            with open(os.path.join('uploads', filename), 'wb') as f:
-                f.write(data)
-
-            return 'Upload successful'
-    return 'Upload failed'
-</pre>
-<p>In the above code, the Flask server defines a route /upload that receives a POST request containing the uploaded file data as a base64-encoded string in the request body. The code decodes the base64 data, generates a unique filename, and saves the data to a file in the uploads directory. The filename is returned as a response to indicate the successful upload.</p>
-<p>To make a request to this Flask endpoint from the client-side using jQuery AXuploader, you can modify the data option in the $.axuploader method to include the base64-encoded data:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">$.axuploader({
-    url: '/upload',
-    data: {
-        file_data: canvas.toDataURL(file.type).split(',')[1] // pass the base64-encoded data
-    },
-    success: function(response) {
-        console.log('Upload successful:', response);
-    },
-    error: function(xhr) {
-        console.error('Upload failed:', xhr.responseText);
-    }
+  // Move the cube based on the arrow keys
+  switch (key) {
+    case 'ArrowUp':
+      await moveCube([0, increment, 0]);
+      break;
+    case 'ArrowDown':
+      await moveCube([0, -increment, 0]);
+      break;
+    case 'ArrowLeft':
+      await moveCube([-increment, 0, 0]);
+      break;
+    case 'ArrowRight':
+      await moveCube([increment, 0, 0]);
+      break;
+  }
 });
-</pre>
-<p>In the above code, the file_data field is added to the data option of the $.axuploader method and its value is set to the base64-encoded data URI of the resized image. This data is sent to the Flask server as the request body of the POST request. The Flask server can then decode this data and save it to a file as shown in the previous code snippet.</p>
-<p>If file is uploaded chunk by chunk:</p>
-<p>Python</p>
-<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from flask import Flask, request
-import base64
-import uuid
-import os
 
-app = Flask(__name__)
+// Function to move the cube by a given translation vector
+async function moveCube(translation) {
+  const currentPosition = await sendRequest({
+    cmd: 'sim.getObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1
+  });
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' in request.files:
-        file = request.files['file']
-        # process the uploaded file
-        if file:
-            # initialize the data buffer
-            data = b''
-            # read the chunks and append to the buffer
-            while True:
-                chunk = file.read(1024 * 1024) # read 1MB chunk
-                if not chunk:
-                    break
-                data += chunk
+  const newPosition = currentPosition.position.map((coord, index) => coord + translation[index]);
 
-            # decode the base64 data
-            data = base64.b64decode(request.form['file_data'])
-
-            # save the data to a file
-            filename = str(uuid.uuid4()) + '.' + file.filename.split('.')[-1]
-            with open(os.path.join('uploads', filename), 'wb') as f:
-                f.write(data)
-
-            return 'Upload successful'
-    return 'Upload failed'
-</pre>
-<p>Javascript:</p>
-<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">$.axuploader({
-    url: '/upload',
-    data: {
-        file_data: canvas.toDataURL(file.type).split(',')[1] // pass the base64-encoded data
-    },
-    chunkSize: 1024 * 1024, // upload in 1MB chunks
-    success: function(response) {
-        console.log('Upload successful:', response);
-    },
-    error: function(xhr) {
-        console.error('Upload failed:', xhr.responseText);
-    }
-});
-</pre>
-<br />Leo Editor << <a href='Leo Editor.html'>Previous</a> <a href='zmqRemoteApi.html'>Next</a> >> zmqRemoteApi</div>
+  await sendRequest({
+    cmd: 'sim.setObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1,
+    position: newPosition
+  });
+}
+</script><br />Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim</div>
         
     <!-- footer -->
       <div class="container">
