@@ -845,6 +845,14 @@ async function moveCube(translation) {
   });
 }
 </script><h1>Coppeliasim</h1>
+<p><a href="https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md">https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md</a> </p>
+<p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=390">https://forum.coppeliarobotics.com/viewtopic.php?t=390</a></p>
+<p>Actually, this is how it is done:</p>
+<ul>
+<li>The wheel is composed by 2 spheres and 2 revolute joints in following configuration: robotBody - activeJoint - nonRespondableSphere - passiveJoint - respondableSphere</li>
+<li>The 2 joints have to be at their specific angle (perpendicular in your case)</li>
+<li>There must be a non-threaded <a class="postlink" href="http://www.coppeliarobotics.com/helpFiles/en/childScripts.htm">child script</a> attached to one of those objects, preferably the first joint. It is in charge of resetting the respondableSphere and reorienting the passiveJoints, and this in each simulation loop</li>
+</ul>
 <pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">from zmqRemoteApi_IPv6 import RemoteAPIClient
 import time
 import math
