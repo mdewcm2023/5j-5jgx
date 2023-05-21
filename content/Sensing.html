@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H1">
+<meta property="head" content="H3">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -141,11 +141,51 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde<br /><h1>Printer</h1>
-<p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
-<p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
-<p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde</div>
+    <div id="tipue_search_content">copsim << <a href='copsim.html'>Previous</a> <a href='Brython_ws.html'>Next</a> >> Brython_ws<br /><h1>Sensing</h1>
+<p>Using zmqremoteAPI to sense object:</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import zmqremoteapi
+
+# Connect to CoppeliaSim through ZMQRemoteAPI
+with zmqremoteapi.RemoteAPIClient('127.0.0.1', 23000) as client:  # Replace with the appropriate IP address
+    # Start the simulation
+    client.simxStartSimulation(zmqremoteapi.simx_opmode_blocking)
+
+    # Get the handle of the proximity sensor in CoppeliaSim
+    res, sensor_handle = client.simxGetObjectHandle('ProximitySensor', zmqremoteapi.simx_opmode_blocking)  # Replace 'ProximitySensor' with the actual sensor name
+    
+    if res == zmqremoteapi.simx_return_ok:
+        # Main loop
+        while True:
+            # Read the proximity sensor's data
+            res, detection_state, detected_object_handle, _, detected_object_position = client.simxReadProximitySensor(sensor_handle, zmqremoteapi.simx_opmode_blocking)
+
+            if res == zmqremoteapi.simx_return_ok and detection_state:
+                # Get the name of the detected object
+                res, detected_object_name = client.simxGetObjectName(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                if res == zmqremoteapi.simx_return_ok:
+                    # Get the type of the detected object
+                    res, detected_object_type = client.simxGetObjectType(detected_object_handle, zmqremoteapi.simx_opmode_blocking)
+
+                    if res == zmqremoteapi.simx_return_ok:
+                        # Get the color of the detected object
+                        res, _, detected_object_color, _, _ = client.simxGetObjectColor(detected_object_handle, -1, zmqremoteapi.simx_opmode_blocking)
+
+                        if res == zmqremoteapi.simx_return_ok:
+                            # Display the sensed object's information
+                            print("Detected Object:")
+                            print("Name:", detected_object_name)
+                            print("Type:", detected_object_type)
+                            print("Color:", detected_object_color)
+                            print("------------------")
+
+            # Delay for a short period before the next sensing
+            client.simxSpinOnce()
+
+    # Stop the simulation
+    client.simxStopSimulation(zmqremoteapi.simx_opmode_blocking)
+</pre>
+<br />copsim << <a href='copsim.html'>Previous</a> <a href='Brython_ws.html'>Next</a> >> Brython_ws</div>
         
     <!-- footer -->
       <div class="container">

@@ -141,11 +141,60 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde<br /><h1>Printer</h1>
-<p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
-<p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
-<p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde</div>
+    <div id="tipue_search_content">Games << <a href='Games.html'>Previous</a> <a href='Windows.html'>Next</a> >> Windows<br /><h1>Note</h1>
+<p><a href="https://github.com/paroga/cbor-js">https://github.com/paroga/cbor-js</a> </p>
+<p><a href="https://github.com/uuidjs/uuid">https://github.com/uuidjs/uuid</a> </p>
+<p><a href="https://github.com/zeromq/zeromq.js/">https://github.com/zeromq/zeromq.js/</a> </p>
+<script src="./../cmsimde/static/brython.js"></script>
+<script src="./../cmsimde/static/brython_stdlib.js"></script>
+<!-- 啟動 Brython -->
+<p>
+<script>
+window.onload=function(){
+brython({debug:1});
+}
+</script>
+<script type="text/python">
+from browser import document, console, window
+
+# Define the CoppeliaSim connection parameters
+host = '127.0.0.1'
+port = 23000
+
+# Connect to CoppeliaSim
+def connect():
+    window.simulator = window.BVRemoteAPI.connect(host, port)
+    if window.simulator.is_connected():
+        console.log('Connected to CoppeliaSim')
+    else:
+        console.log('Failed to connect to CoppeliaSim')
+
+# Disconnect from CoppeliaSim
+def disconnect():
+    if hasattr(window, 'simulator') and window.simulator.is_connected():
+        window.simulator.disconnect()
+        console.log('Disconnected from CoppeliaSim')
+
+# Send a command to CoppeliaSim and get the response
+def send_command(command):
+    if hasattr(window, 'simulator') and window.simulator.is_connected():
+        res, ret_ints, ret_floats, ret_strings, ret_buffer = window.simulator.simxCallScriptFunction(
+            '', window.simulator.sim_scripttype_childscript, 'pyrep', command, [], [], [], '')
+        if res == 0:
+            console.log('Command executed successfully')
+            return ret_strings[0]  # Assuming a string response
+        else:
+            console.log('Failed to execute command:', res)
+    else:
+        console.log('Not connected to CoppeliaSim')
+
+# Example usage
+connect()
+response = send_command('simGetObjectName(0)')
+console.log('Response:', response)
+disconnect()
+</script>
+</p><br />Games << <a href='Games.html'>Previous</a> <a href='Windows.html'>Next</a> >> Windows</div>
         
     <!-- footer -->
       <div class="container">

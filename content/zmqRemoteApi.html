@@ -141,11 +141,91 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde<br /><h1>Printer</h1>
-<p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
-<p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
-<p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde</div>
+    <div id="tipue_search_content">Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim<br /><h1>zmqRemoteApi</h1>
+<script src="https://cdn.jsdelivr.net/npm/zmq@2.15.3/index.min.js"></script>
+<script>
+const zmq = require('zeromq');
+
+// Set up the ZMQ socket connection
+const socket = zmq.socket('req');
+const port = 23000; // Port number used by the ZMQ Remote API server
+const ipAddress = '[2001:288:6004:17:10ff::5]'; // IP address of the machine running the ZMQ Remote API server
+const connectionAddress = `tcp://${ipAddress}:${port}`;
+socket.connect(connectionAddress);
+
+// Function to send a request to the ZMQ Remote API server
+function sendRequest(request) {
+  return new Promise((resolve, reject) => {
+    socket.send(JSON.stringify(request));
+    socket.on('message', (response) => {
+      resolve(JSON.parse(response.toString()));
+    });
+  });
+}
+
+// Get the object handle from the ZMQ Remote API server
+async function getObject(objectName) {
+  const request = {
+    cmd: 'sim.getObject',
+    objectName: objectName
+  };
+
+  const response = await sendRequest(request);
+  return response.handle;
+}
+
+// Set the initial position of the cube
+const initialPosition = [0, 0, 0];
+const cubeHandle = await getObject('/cube');
+await sendRequest({
+  cmd: 'sim.setObjectPosition',
+  handle: cubeHandle,
+  relativeToObjectHandle: -1,
+  position: initialPosition
+});
+
+// Set the increment value for each movement
+const increment = 0.1;
+
+// Listen for keydown events
+document.addEventListener('keydown', async (event) => {
+  const key = event.key;
+
+  // Move the cube based on the arrow keys
+  switch (key) {
+    case 'ArrowUp':
+      await moveCube([0, increment, 0]);
+      break;
+    case 'ArrowDown':
+      await moveCube([0, -increment, 0]);
+      break;
+    case 'ArrowLeft':
+      await moveCube([-increment, 0, 0]);
+      break;
+    case 'ArrowRight':
+      await moveCube([increment, 0, 0]);
+      break;
+  }
+});
+
+// Function to move the cube by a given translation vector
+async function moveCube(translation) {
+  const currentPosition = await sendRequest({
+    cmd: 'sim.getObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1
+  });
+
+  const newPosition = currentPosition.position.map((coord, index) => coord + translation[index]);
+
+  await sendRequest({
+    cmd: 'sim.setObjectPosition',
+    handle: cubeHandle,
+    relativeToObjectHandle: -1,
+    position: newPosition
+  });
+}
+</script><br />Git << <a href='Git.html'>Previous</a> <a href='Coppeliasim.html'>Next</a> >> Coppeliasim</div>
         
     <!-- footer -->
       <div class="container">

@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H1">
+<meta property="head" content="H3">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -141,11 +141,83 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde<br /><h1>Printer</h1>
-<p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
-<p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
-<p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde</div>
+    <div id="tipue_search_content">WebSocket << <a href='WebSocket.html'>Previous</a> <a href='counter.html'>Next</a> >> counter<br /><h1>瀏覽器串流</h1>
+<p><iframe height="480" src="https://copsim.cycu.org/" width="640"></iframe></p>
+<p>以下設定適用於 CoppeliaSim 採 https 檢視瀏覽器上的場景串流.</p>
+<p>stunnel.conf 檔案設定:</p>
+<p>將 http 原先在 port 23020 的連線指向 https 外部 IP, 意即 server 的 SSL/TLS 在外部 IP 位址的 443 port 中, 而<span style="background-color: #ffff00;">隨後的 WebSocket client 要建立 wss:// 雙向連結時, 必須指向外部 IP address 中的 port 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">[https]
+accept =140.130.17.108:443
+connect = 127.0.0.1:23020
+cert = c:\tmp\localhost.crt
+key = c:\tmp\localhost.key</pre>
+<p>threejsFrontend.html 中:</p>
+<p><span style="background-color: #ffff00;">因為 client 要以 wss:// 建立雙向連線, 必須指令 https 對應的 port, 也就是 443</span>.</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">&lt;script&gt;
+    const wsPort = 443;
+    const codec = "cbor";
+&lt;/script&gt;</pre>
+<p>simAddonVisualization stream.lua 中:</p>
+<p>Server 內部由 Modules -&gt; Connectivity -&gt; Visualization Stream 時就是執行 <span style="background-color: #ffff00;">simAddonVisualization stream.lua 啟動時以內建的 http port 23020 啟動</span>, 也就是 stunnel 設定中的 connect 伺服器封包來源, 經由 stunnel 後, 則以外部 IP address 從 443 port 讓 wss:// WebSocket 連線提出 requests.</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">    wsPort=sim.getNamedInt32Param('visualizationStream.ws.port') or 23020
+    sim.addLog(sim.verbosity_scriptinfos,'WS endpoint on port '..tostring(wsPort)..'...')
+    if sim.getNamedBoolParam('visualizationStream.ws.retryOnStartFailure') then
+        while true do
+            local r,e=pcall(function() wsServer=simWS.start(wsPort) end)
+            if r then break end
+            sim.addLog(sim.verbosity_scriptwarnings,'WS failed to start ('..e..'). Retrying...')
+            sim.wait(0.5,false)
+        end
+    else
+        wsServer=simWS.start(wsPort)
+    end</pre>
+<p>threejsFrontend.js 中:</p>
+<p>這是 <span style="background-color: #ffff00;">client 端擬以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class VisualizationStreamClient {
+    constructor(host = '140.130.17.108', port = 443, codec = 'cbor') {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        this.websocket = new ReconnectingWebSocket(`wss://${this.host}:${this.port}`);</pre>
+<p>同樣在 threejsFrontend.js 中 line 3127:</p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">// original port is 23050 Yen changed to 443
+var remoteApiClient = new RemoteAPIClient(window.location.hostname, 443, 'cbor', {createWebSocket: url =&gt; new ReconnectingWebSocket(url)});
+</pre>
+<p>RemoteAPIclient.js 中:</p>
+<p>這也是 <span style="background-color: #ffff00;">WebSocket client 端, 以 wss:// 提出 requests, 必須將連線指向外部 IP 位址的 port 443</span></p>
+<pre class="brush:js;auto-links:false;toolbar:false" contenteditable="false">class RemoteAPIClient {
+    constructor(host = '140.130.17.108', port = 443, codec = "cbor", opts = {}) {
+        this.host = host;
+        this.port = port;
+        this.codec = codec;
+        var packMessage;
+        var unpackMessage;
+        if(this.codec == 'cbor') {
+            //this.websocket.binaryType = "arraybuffer";
+            packMessage = data =&gt; CBOR.encode(data);
+            unpackMessage = async data =&gt; CBOR.decode(await data.arrayBuffer());
+        } else if(this.codec == "json") {
+            packMessage = data =&gt; JSON.stringify(data);
+            unpackMessage = data =&gt; JSON.parse(data);
+        }
+        var wsOpts = {
+            packMessage,
+            unpackMessage,
+            // attach requestId to message as `id` field
+            attachRequestId: (data, requestId) =&gt; Object.assign({id: requestId}, data),
+            // read requestId from message `id` field
+            extractRequestId: data =&gt; data &amp;&amp; data.id,
+        };
+        for(var k in opts)
+            wsOpts[k] = opts[k];
+        this.websocket = new WebSocketAsPromised(`wss://${this.host}:${this.port}`, wsOpts);
+    }</pre>
+<p><span style="background-color: #ffff00;">simAddOnWS remote API server.lua 中 lin</span></p>
+<p>&gt;:</p>
+<pre class="brush:lua;auto-links:false;toolbar:false" contenteditable="false">-- original port is 23050 Yen changes to 443
+port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
+<p></p>
+<br />WebSocket << <a href='WebSocket.html'>Previous</a> <a href='counter.html'>Next</a> >> counter</div>
         
     <!-- footer -->
       <div class="container">

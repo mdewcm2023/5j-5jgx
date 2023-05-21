@@ -2,7 +2,7 @@
         <head>
         <title>5jgx</title>
         <meta charset="utf-8">
-<meta property="head" content="H1">
+<meta property="head" content="H2">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link href="https://fonts.googleapis.com/css?family=Quicksand:300,400,500,700,900" rel="stylesheet">
         <link rel="stylesheet" href="./../cmsimde/static/chimper/fonts/icomoon/style.css">
@@ -141,11 +141,67 @@ img.add_border {
           </div>
           
         </header>
-    <div id="tipue_search_content">OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde<br /><h1>Printer</h1>
-<p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
-<p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
-<p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
-<p></p><br />OBS << <a href='OBS.html'>Previous</a> <a href='cmsimde.html'>Next</a> >> cmsimde</div>
+    <div id="tipue_search_content">Sensing << <a href='Sensing.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython<br /><h1>Brython_ws</h1>
+<p><a href="https://www.piesocket.com/websocket-tester">Brython WebSocket tester</a></p>
+<script src="./../cmsimde/static/brython.js"></script>
+<script src="./../cmsimde/static/brython_stdlib.js"></script>
+<!-- 啟動 Brython -->
+<p>
+<script>
+window.onload=function(){
+brython({debug:1});
+}
+</script>
+<button id="openbtn">Open connection</button> <br/><input id="data" type="text"/><button disabled="disabled" id="sendbtn">Send</button></p>
+<p><button disabled="disabled" id="closebtn">Close connection</button>
+<script type="text/python">
+from browser import bind, document, websocket
+from browser.widgets.dialog import InfoDialog
+
+def on_open(evt):
+    document['sendbtn'].disabled = False
+    document['closebtn'].disabled = False
+    document['openbtn'].disabled = True
+    InfoDialog("websocket", f"Connection open")    
+
+def on_message(evt):
+    # message received from server
+    InfoDialog("websocket", f"Message received : {evt.data}")
+
+def on_close(evt):
+    # websocket is closed
+    InfoDialog("websocket", "Connection is closed")
+    document['openbtn'].disabled = False
+    document['closebtn'].disabled = True
+    document['sendbtn'].disabled = True
+
+ws = None
+
+@bind('#openbtn', 'click')
+def _open(ev):
+    if not websocket.supported:
+        InfoDialog("websocket", "WebSocket is not supported by your browser")
+        return
+    global ws
+    # open a web socket
+    ws = websocket.WebSocket("wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self")
+    # bind functions to web socket events
+    ws.bind('open',on_open)
+    ws.bind('message',on_message)
+    ws.bind('close',on_close)
+
+@bind('#sendbtn', 'click')
+def send(ev):
+    data = document["data"].value
+    if data:
+        ws.send(data)
+
+@bind('#closebtn', 'click')
+def close_connection(ev):
+    ws.close()
+    document['openbtn'].disabled = False
+</script>
+</p><br />Sensing << <a href='Sensing.html'>Previous</a> <a href='Brython.html'>Next</a> >> Brython</div>
         
     <!-- footer -->
       <div class="container">
