@@ -2339,6 +2339,14 @@ def send_file(path):
 #@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')
 #@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
+#@app.route('/images/<path:path>')
 @app.route('/images/<path:path>')
 def send_images(path):
     
