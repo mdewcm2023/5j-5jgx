@@ -85,7 +85,9 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>利用程式控制 OBS:</p>
 <p style="padding-left: 30px;"><a href="https://docs.obsproject.com/scripting">https://docs.obsproject.com/scripting</a></p>
 <p></p>
-<h1>Printer</h1>
+<h1>Arduino</h1>
+<p>Gravity VL53L0X ToF Laser Range Finder, for Arduino Board</p>
+<h2>Printer</h2>
 <p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
 <p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
 <p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
@@ -855,7 +857,17 @@ async function moveCube(translation) {
   });
 }
 </script><h1>Coppeliasim</h1>
-<p><a href="https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md">https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md</a> </p>
+<p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=3431">https://forum.coppeliarobotics.com/viewtopic.php?t=3431</a> </p>
+<p>you have several different components that could cause that jittering, here the main:</p>
+<ul>
+<li>bad mass/inertia distribution. This is mainly the case when using Bullet and ODE. Check <a class="postlink" href="http://www.coppeliarobotics.com/helpFiles/en/designingDynamicSimulations.htm#masses">this page</a>.</li>
+<li>bad position controller values: specially when having several links in serial. Try to not have a too rigid control (e.g. in case of a PID controller, try to first use PID values of 0.1, 0, 0)</li>
+<li>friction parameters: try to increase friction. When using Bullet, try to use the newer version of the Bullet engine. With the older Bullet version, you might have to use the <em class="text-italics">sticky contact</em> option.</li>
+<li>try to avoid using non-pure shapes for critical contacts (such as feet-ground contacts). Check <a class="postlink" href="http://www.coppeliarobotics.com/helpFiles/en/designingDynamicSimulations.htm#pureShapes">this page</a>.</li>
+<li>jittering can also be caused by constraints that are not compatible. e.g. different items in the robot generating collision responses with each other. Often it already helps a lot to appropriately adjust the <a class="postlink" href="http://www.coppeliarobotics.com/helpFiles/en/shapeDynamicsProperties.htm"><strong class="text-strong">local respondable masks</strong></a> of the dynamically enabled shapes in the robot</li>
+</ul>
+<p>It is always a good practice to switch to a different physics engine to see if the problem increases/decreases, to give you an idea what the cause could be.</p>
+<p><a href="https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md">https://github.com/verlab/dcc042-robotica-movel/blob/main/README.md</a></p>
 <p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=390">https://forum.coppeliarobotics.com/viewtopic.php?t=390</a></p>
 <p>Actually, this is how it is done:</p>
 <ul>
@@ -2270,242 +2282,4 @@ window.requestAnimationFrame(animate)
 <p>STL part viewer</p>
 <p height="480" id="stl" width="640"></p>
 <p>
-<script type="text/python">
-from browser import document, html
-
-# Create a container for the STL viewer
-stl_container = html.DIV(id="stl_cont")
-stl = document["stl"]
-stl <= stl_container
-
-# Load the Stl Viewer Javascript Plugin
-stl_viewer_script = html.SCRIPT(src="https://www.viewstl.com/plugin/stl_viewer.min.js")
-stl <= stl_viewer_script
-
-def init_stl_viewer():
-    # Create a new instance of Stl Viewer
-    stl_viewer = window.StlViewer.new(document.getElementById("stl_cont"), {"models": [{"id": 0, "filename": "/downloads/block100.stl"}]})
-
-# Wait for the Stl Viewer Javascript Plugin to load before initializing the viewer
-document.bind("readystatechange", lambda: init_stl_viewer() if document.readyState == "complete" else None)
-</script>
-</p>
-<p>Using <a href="https://www.sciencedirect.com/science/article/pii/S0950705115005043">sine-cosine algorithm</a> to optimize with constraints in Brython:</p>
-<pre class="brush:html;auto-links:false;toolbar:false" contenteditable="false">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/dist/brython_stdlib"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body onload="brython()"&gt;
-
-&lt;div id="output"&gt;&lt;/div&gt;
-
-&lt;script type="text/python"&gt;
-from browser import document
-from random import random, uniform
-from math import sin, cos, pi
-
-# Define the objective function
-def objective_function(x):
-    return x[0]**2 + x[1]**2
-
-# Define the constraint functions
-def constraint1(x):
-    return x[0] + x[1] - 2
-
-def constraint2(x):
-    return 1 - x[0] - x[1]
-
-# Define the penalty function
-def penalty_function(x):
-    penalty = 0
-    if constraint1(x) &gt; 0:
-        penalty += constraint1(x)
-    if constraint2(x) &gt; 0:
-        penalty += constraint2(x)
-    return penalty
-
-# Define the fitness function
-def fitness_function(x):
-    return objective_function(x) + penalty_function(x)
-
-# Define the sine cosine algorithm
-def sine_cosine_algorithm(fitness_function, dimension, lower_bound, upper_bound, population_size, max_iterations):
-    # Initialize the population
-    population = [[uniform(lower_bound, upper_bound) for _ in range(dimension)] for _ in range(population_size)]
-    population_fitness = [fitness_function(individual) for individual in population]
-
-    # Initialize the best solution
-    best_solution = population[0]
-    best_fitness = population_fitness[0]
-
-    # Main loop of the algorithm
-    for iteration in range(max_iterations):
-        # Calculate the value of a and r1
-        a = 2 - iteration * (2 / max_iterations)
-        r1 = 2 * pi * random()
-
-        # Update the population
-        for i in range(population_size):
-            # Calculate the value of r2, r3 and r4
-            r2 = 2 * random()
-            r3 = 2 * random()
-            r4 = random()
-
-            # Update the individual
-            for j in range(dimension):
-                if r4 &lt; 0.5:
-                    population[i][j] += r1 * sin(r2) * abs(r3 * best_solution[j] - population[i][j])
-                else:
-                    population[i][j] += r1 * cos(r2) * abs(r3 * best_solution[j] - population[i][j])
-
-                # Make sure the individual is within the bounds
-                if population[i][j] &lt; lower_bound:
-                    population[i][j] = lower_bound
-                elif population[i][j] &gt; upper_bound:
-                    population[i][j] = upper_bound
-
-            # Calculate the fitness of the individual
-            population_fitness[i] = fitness_function(population[i])
-
-            # Update the best solution
-            if population_fitness[i] &lt; best_fitness:
-                best_solution = population[i]
-                best_fitness = population_fitness[i]
-
-        # Print the current iteration and best fitness
-        print(f'Iteration: {iteration + 1}, Best Fitness: {best_fitness:.6f}')
-
-    return best_solution
-
-# Run the sine cosine algorithm to solve the optimization problem with constraints
-best_solution = sine_cosine_algorithm(fitness_function, dimension=2, lower_bound=-10, upper_bound=10, population_size=50, max_iterations=100)
-
-# Print the result
-output_div = document['output']
-output_div.text = f'Best Solution: {best_solution}'
-&lt;/script&gt;
-
-&lt;script src="https://cdn.jsdelivr.net/npm/brython@3/dist/brython"&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
-<p>Plot the result by using <a href="https://plotly.com/javascript/">plotly.js</a>:</p>
-<pre class="brush:html;auto-links:false;toolbar:false" contenteditable="false">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/dist/brython_stdlib"&gt;&lt;/script&gt;
-    &lt;script src="https://cdn.plot.ly/plotly-latest.min.js"&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body onload="brython()"&gt;
-
-&lt;div id="output"&gt;&lt;/div&gt;
-&lt;div id="plot"&gt;&lt;/div&gt;
-
-&lt;script type="text/python"&gt;
-from browser import document
-from random import random, uniform
-from math import sin, cos, pi
-
-# Define the objective function
-def objective_function(x):
-    return x[0]**2 + x[1]**2
-
-# Define the constraint functions
-def constraint1(x):
-    return x[0] + x[1] - 2
-
-def constraint2(x):
-    return 1 - x[0] - x[1]
-
-# Define the penalty function
-def penalty_function(x):
-    penalty = 0
-    if constraint1(x) &gt; 0:
-        penalty += constraint1(x)
-    if constraint2(x) &gt; 0:
-        penalty += constraint2(x)
-    return penalty
-
-# Define the fitness function
-def fitness_function(x):
-    return objective_function(x) + penalty_function(x)
-
-# Define the sine cosine algorithm
-def sine_cosine_algorithm(fitness_function, dimension, lower_bound, upper_bound, population_size, max_iterations):
-    # Initialize the population
-    population = [[uniform(lower_bound, upper_bound) for _ in range(dimension)] for _ in range(population_size)]
-    population_fitness = [fitness_function(individual) for individual in population]
-
-    # Initialize the best solution
-    best_solution = population[0]
-    best_fitness = population_fitness[0]
-
-    # Main loop of the algorithm
-    for iteration in range(max_iterations):
-        # Calculate the value of a and r1
-        a = 2 - iteration * (2 / max_iterations)
-        r1 = 2 * pi * random()
-
-        # Update the population
-        for i in range(population_size):
-            # Calculate the value of r2, r3 and r4
-            r2 = 2 * random()
-            r3 = 2 * random()
-            r4 = random()
-
-            # Update the individual
-            for j in range(dimension):
-                if r4 &lt; 0.5:
-                    population[i][j] += r1 * sin(r2) * abs(r3 * best_solution[j] - population[i][j])
-                else:
-                    population[i][j] += r1 * cos(r2) * abs(r3 * best_solution[j] - population[i][j])
-
-                # Make sure the individual is within the bounds
-                if population[i][j] &lt; lower_bound:
-                    population[i][j] = lower_bound
-                elif population[i][j] &gt; upper_bound:
-                    population[i][j] = upper_bound
-
-            # Calculate the fitness of the individual
-            population_fitness[i] = fitness_function(population[i])
-
-            # Update the best solution
-            if population_fitness[i] &lt; best_fitness:
-                best_solution = population[i]
-                best_fitness = population_fitness[i]
-
-        # Print the current iteration and best fitness
-        print(f'Iteration: {iteration + 1}, Best Fitness: {best_fitness:.6f}')
-
-    return best_solution
-
-# Run the sine cosine algorithm to solve the optimization problem with constraints
-best_solution = sine_cosine_algorithm(fitness_function, dimension=2, lower_bound=-10, upper_bound=10, population_size=50, max_iterations=100)
-
-# Print the result
-output_div = document['output']
-output_div.text = f'Best Solution: {best_solution}'
-
-# Plot the result using Plotly.js
-data = [
-    {
-        'x': [best_solution[0]],
-        'y': [best_solution[1]],
-        'mode': 'markers',
-        'marker': {'size': 12},
-        'name': 'Best Solution'
-    }
-]
-
-layout = {
-    'xaxis': {'range': [-10, 10]},
-    'yaxis': {'range': [-10, 10]},
-}
-
-Plotly.newPlot('plot', data, layout)
-&lt;/script&gt;
-
-&lt;script src="https://cdn.jsdelivr.net/npm/brython@3/dist/brython"&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</pre>
-<p></p>
+<script type="text/python"></script></p>
