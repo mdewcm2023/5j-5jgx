@@ -252,7 +252,44 @@ void loop() {
 
   Serial.println("");
 }</pre>
-<p></p>
+<p>from <a href="https://kristianlindroos.wordpress.com/">https://kristianlindroos.wordpress.com/</a> </p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import serial
+import Blender
+import bpy
+
+ob = Blender.Object.GetSelected()
+obj = ob[0]
+
+t = 0
+
+s = serial.Serial(“/dev/ttyACM0”, 115200)
+
+x = 0.0
+y = 0.0
+z = 0.0
+
+f = “” # char buffer
+k = “” # next char
+
+while (t &lt; 5000):
+
+    k = s.read()
+    
+    if (k == ‘z’):
+        z = float(f) / 500.0
+        obj.setEuler(x, y, 0.0) # Z-Axis not used because it produces some unintuitive results
+        Blender.Window.Redraw()
+        f = “”
+    elif (k == ‘x’):
+        x = float(f) / 255.0 # you can change this value to your taste
+        f = “”
+    elif (k == ‘y’):
+        y = float(f) / 255.0 # you can change this value to your taste
+        f = “”
+    else:
+        f += k
+    
+    t += 1</pre>
 <p></p><h2>H48C</h2>
 <p>Hitachi H48C 3-axis accelerator and Arduino</p>
 <p><a href="/downloads/H48C_3_Axis_Accelerometer.pdf">H48C_3_Axis_Accelerometer.pdf</a></p>
