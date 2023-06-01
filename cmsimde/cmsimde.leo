@@ -1954,6 +1954,14 @@ def send_file(path):
 #@app.route('/images/&lt;path:path&gt;')
 #@app.route('/images/&lt;path:path&gt;')
 #@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
+#@app.route('/images/&lt;path:path&gt;')
 </t>
 <t tx="leo.20190515144238.15">@app.route('/images/&lt;path:path&gt;')
 def send_images(path):
@@ -3730,7 +3738,21 @@ Additionally, the fact that the code takes an options parameter suggests that it
 
 The AXuploader.js script follows a plugin design pattern for jQuery. It defines a set of methods that can be called on a jQuery object that has been initialized as an AXuploader instance. These methods include "init", which initializes the AXuploader instance, "enable" and "disable", which respectively enable and disable the uploader, "start", which begins the upload process, "clear", which clears the uploaded files, and "destroy", which removes the AXuploader instance from the DOM. 
 
-At the end of the script, there is a block of code that uses the jQuery "fn" namespace to extend the jQuery object with the AXuploader plugin. It defines a function that takes a "method" parameter and an "options" parameter, and checks if the specified method exists in the "methods" object. If the method exists, it is executed with the given arguments. If the method does not exist, but the parameter is an object or not specified, then the "init" method is called with the given arguments. Finally, if the method is not recognized, an error message is displayed. This allows for flexible usage of the plugin and easy integration with other jQuery code.</t>
+At the end of the script, there is a block of code that uses the jQuery "fn" namespace to extend the jQuery object with the AXuploader plugin. It defines a function that takes a "method" parameter and an "options" parameter, and checks if the specified method exists in the "methods" object. If the method exists, it is executed with the given arguments. If the method does not exist, but the parameter is an object or not specified, then the "init" method is called with the given arguments. Finally, if the method is not recognized, an error message is displayed. This allows for flexible usage of the plugin and easy integration with other jQuery code.
+
+jQuery is a popular JavaScript library that provides a variety of features and functionalities for developing web applications. There are several design patterns that can be used with jQuery, including:
+
+1. Singleton Pattern: In this pattern, only one instance of an object is created and shared across the application. This can help to reduce memory usage and ensure consistency across the application.
+
+2. Observer Pattern: This pattern is used to notify objects of changes to the state of another object. This can be useful for implementing event handling and callback functionality.
+
+3. Factory Pattern: This pattern is used to create objects dynamically based on certain conditions or parameters. This can help to simplify object creation and improve code maintainability.
+
+4. Module Pattern: This pattern is used to encapsulate code within a single object or module, helping to improve code organization and reduce the risk of naming collisions.
+
+5. Facade Pattern: This pattern is used to provide a simplified interface to a complex system or library. This can help to improve usability and reduce the learning curve for developers using the system or library.
+
+Each of these design patterns can be useful for different scenarios and applications when working with jQuery.</t>
 <t tx="yen.20200710111924.1">def checkMath():
 
     """Use LaTeX Equation rendering
