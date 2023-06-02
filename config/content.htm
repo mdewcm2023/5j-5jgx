@@ -296,7 +296,7 @@ while (t &lt; 5000):
 <p>Hitachi H48C 3-axis accelerator and Arduino</p>
 <p><a href="/downloads/H48C_3_Axis_Accelerometer.pdf">H48C_3_Axis_Accelerometer.pdf</a></p>
 <p><a href="/downloads/MCP3204.pdf">MCP3204.pdf</a></p>
-<p><a href="https://playground.arduino.cc/Main/ParallaxH48C/">https://playground.arduino.cc/Main/ParallaxH48C/</a> </p>
+<p><a href="https://playground.arduino.cc/Main/ParallaxH48C/">https://playground.arduino.cc/Main/ParallaxH48C/</a></p>
 <pre class="brush:cpp;auto-links:false;toolbar:false" contenteditable="false">/*
 /////////////////////////////////
 Htachi H48C3 Axis Accelerometer 
@@ -515,7 +515,150 @@ void loop() {
   delay(100);  
 }
 </pre>
-<p></p><h2>Python</h2>
+<h3>detail desc</h3>
+<p>/*<br/> This code is written for an Arduino board with an H48C sensor connected. The H48C sensor is a three-axis magnetoresistive sensor that can measure magnetic fields in the X, Y, and Z directions.</p>
+<p>The code includes necessary libraries and defines variables for the Arduino pins used to communicate with the sensor. The CS_pin (Chip Select), DIO_pin (Data I/O), and CLK_pin (Clock) are initialized with their respective pin numbers.</p>
+<p>The code also declares variables to store the temperature LSB (Least Significant Byte) and MSB (Most Significant Byte), as well as variables for the X, Y, and Z axis measurements.</p>
+<p>There are several functions defined in the code:</p>
+<p>- StartMeasurement(): This function sets the pinMode for the DIO_pin as OUTPUT and initializes the communication with the sensor by setting CS_pin and CLK_pin to LOW. It then sends a start command to the sensor.<br/> <br/> - ShiftOutNibble(byte DataOutNibble): This function is responsible for sending a nibble (4 bits) of data to the sensor. It iterates over each bit of the nibble, sets the DIO_pin according to the bit value, and toggles the CLK_pin to send the data. The data rate is set to 2.0 MHz.<br/> <br/> - SampleIt(): This function samples the data from the sensor by toggling the CLK_pin and reading the value from the DIO_pin. If the value is LOW, it blinks an LED to indicate a successful measurement.<br/> <br/> - ShiftInNibble(): This function reads a nibble of data from the sensor. It toggles the CLK_pin and reads the value from the DIO_pin for each bit of the nibble. It constructs the nibble value and returns it.<br/> <br/> - EndMeasurement(): This function finalizes the measurement by setting CS_pin and CLK_pin to HIGH.<br/> <br/> - GetValue(byte Axis): This function performs a complete measurement for a given axis. It starts the measurement, sends the axis value using ShiftOutNibble(), samples the data using SampleIt(), reads the result from the sensor using ShiftInNibble(), and ends the measurement. It combines the received nibbles to calculate the final result and returns it.<br/> <br/> The setup() function is called once at the start of the program. It initializes the serial communication with a baud rate of 57600 and sets the pinMode for the CS_pin, CLK_pin, and DIO_pin. It also sends initialization commands to the sensor.</p>
+<p>The loop() function is called repeatedly after the setup. It reads the X, Y, and Z axis values using GetValue() function for each axis, subtracts the values from 2048, and prints them to the serial monitor. The code then delays for 300 milliseconds before starting the next iteration.</p>
+<p>Overall, this code enables communication with an Arduino board and an H48C sensor to read magnetic field measurements in three dimensions and display them on the serial monitor.<br/>*/</p>
+<pre class="brush:cpp;auto-links:false;toolbar:false" contenteditable="false">#include "Arduino.h"
+#include "Wire.h"
+
+//// VARS
+int CS_pin = 9;  // Chip Select pin
+int DIO_pin = 10;  // Data I/O pin
+int CLK_pin = 11;  // Clock pin
+
+byte tempLSB = 0;  // Variable to store temperature LSB (not used in the code)
+byte tempMSB = 0;  // Variable to store temperature MSB (not used in the code)
+
+int aX = 0;  // Variable to store X-axis measurement
+int aY = 0;  // Variable to store Y-axis measurement
+int aZ = 0;  // Variable to store Z-axis measurement
+
+//// FUNCTIONS
+
+// Start the measurement process
+void StartMeasurement() {
+  pinMode(DIO_pin, OUTPUT);  // Set DIO_pin as OUTPUT
+  digitalWrite(CS_pin, LOW);  // Set CS_pin LOW
+  digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+  delayMicroseconds(1);
+  digitalWrite(DIO_pin, HIGH);  // Set DIO_pin HIGH
+  digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+  delayMicroseconds(1);  
+}
+
+// Shift out a nibble (4 bits) of data to the sensor
+void ShiftOutNibble(byte DataOutNibble) {
+  for (int i = 3; i &gt;= 0; i--) {  // Loop through each bit of the nibble
+    digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+    if ((DataOutNibble &amp; (1 &lt;&lt; i)) == (1 &lt;&lt; i)) {  // Check if the bit is set to 1
+      digitalWrite(DIO_pin, HIGH);  // Set DIO_pin HIGH
+    } else {
+      digitalWrite(DIO_pin, LOW);  // Set DIO_pin LOW
+    }
+    digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH to send the data
+    delayMicroseconds(1);
+  }
+}
+
+// Sample the data from the sensor
+void SampleIt() {
+  digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+  delayMicroseconds(1);
+  digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+  delayMicroseconds(1);
+
+  pinMode(DIO_pin, INPUT);  // Set DIO_pin as INPUT
+  digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+  delayMicroseconds(1);
+  digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+
+  if (digitalRead(DIO_pin) == LOW) {
+    // Blink LED because the measurement is successful
+  }
+}
+
+// Shift in a nibble (4 bits) of data from the sensor
+byte ShiftInNibble() {
+  byte resultNibble = 0;
+
+  for (int i = 3; i &gt;= 0; i--) {
+    digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+    delayMicroseconds(1);
+    if (digitalRead(DIO_pin) == HIGH) {
+      resultNibble += 1 &lt;&lt; i;  // Set the corresponding bit in resultNibble to 1
+    } else {
+      resultNibble += 0 &lt;&lt; i;  // Set the corresponding bit in resultNibble to 0
+    }
+    digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+  }
+
+  return resultNibble;
+}
+
+// End the measurement process
+void EndMeasurement() {
+  digitalWrite(CS_pin, HIGH);  // Set CS_pin HIGH
+  digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+}
+
+// Get the measurement value for a specific axis
+int GetValue(byte Axis) {
+  int Result = 0;
+  StartMeasurement();  // Start the measurement process
+  ShiftOutNibble(Axis);  // Send the axis value to the sensor
+  SampleIt();  // Sample the data from the sensor
+  // Read the result from the sensor (3 nibbles in total)
+  Result = (ShiftInNibble() &lt;&lt; 8) + (ShiftInNibble() &lt;&lt; 4) + ShiftInNibble();
+  EndMeasurement();  // End the measurement process
+
+  return Result;
+}
+
+//// SETUP
+
+void setup() {
+  Serial.begin(57600);  // Initialize serial communication at 57600 baud rate
+  pinMode(CS_pin, OUTPUT);  // Set CS_pin as OUTPUT
+  pinMode(CLK_pin, OUTPUT);  // Set CLK_pin as OUTPUT
+  pinMode(DIO_pin, OUTPUT);  // Set DIO_pin as OUTPUT
+  digitalWrite(CS_pin, LOW);  // Set CS_pin LOW
+  digitalWrite(CLK_pin, LOW);  // Set CLK_pin LOW
+  delayMicroseconds(1);
+  digitalWrite(CS_pin, HIGH);  // Set CS_pin HIGH
+  digitalWrite(CLK_pin, HIGH);  // Set CLK_pin HIGH
+}
+
+//// LOOP
+
+void loop() {
+  // Read and print the X, Y, and Z axis values
+  Serial.print(2048 - GetValue(B1000));  // X-axis
+  Serial.print(" ");
+  Serial.print(2048 - GetValue(B1001));  // Y-axis
+  Serial.print(" ");
+  Serial.print(2048 - GetValue(B1010));  // Z-axis
+
+  Serial.println("");  // Print a newline character
+  delay(300);  // Delay for 300 milliseconds
+}
+</pre>
+<p>The `B1000`, `B1001`, and `B1010` in the code are binary representations of the axis values. They are written in a binary format to represent the specific axis that the code is trying to measure.</p>
+<p>In binary representation, `B1000` is equivalent to decimal 8, `B1001` is equivalent to decimal 9, and `B1010` is equivalent to decimal 10. These binary values are used to select the specific axis when communicating with the H48C sensor.</p>
+<p>The H48C sensor uses a specific protocol where each nibble of the data represents a different function. In this case, the values `B1000`, `B1001`, and `B1010` are used to indicate the X, Y, and Z axes respectively to the sensor. By sending these values to the sensor, the code instructs it to perform a measurement on the specified axis.</p>
+<p>The binary number `B1000` represents the decimal value 8. The binary representation of numbers follows a positional numbering system, where each digit's position represents a power of 2. In binary, each digit can be either 0 or 1, and the rightmost digit represents 2^0 (which is 1), the next digit represents 2^1 (which is 2), the next digit represents 2^2 (which is 4), and so on.</p>
+<p>In the case of `B1000`, we have:<br/>1 * 2^3 + 0 * 2^2 + 0 * 2^1 + 0 * 2^0 = 8</p>
+<p>So, `B1000` is equivalent to decimal 8, not decimal 4 as mentioned earlier. I apologize for the incorrect information.</p>
+<p>The expression `2048 - GetValue(B1000)` is used to calculate the offset or the difference between the measurement value obtained from the sensor and the reference point of 2048.</p>
+<p>In the code, `GetValue(B1000)` is used to retrieve the measurement value for the X-axis. By subtracting this value from 2048, the code is calculating the deviation or displacement of the X-axis measurement from the reference point of 2048. This can be useful if you want to determine the relative position or displacement of the magnetic field along the X-axis.</p>
+<p>By subtracting the measurement value from 2048, the code ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This can help in interpreting the direction or polarity of the magnetic field along the X-axis.</p>
+<p>the ADC has a resolution of 12 bits, which means it can produce 4096 (2^12) different values. With a 12-bit ADC, the range of values it can measure spans from 0 to 4095.</p>
+<p>To calculate the G-force, the code subtracts the reference value (vRef) from the measurement value (axis). By using 2048 as the reference point, it ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This allows for easier interpretation of the direction or polarity of the measured G-force.</p>
+<p>Since the ADC range is from 0 to 4095, subtracting 2048 from the measurement value centers the range around zero. This way, positive values indicate G-forces in one direction, while negative values indicate G-forces in the opposite direction.</p><h2>Python</h2>
 <p>python read arduino sensor data</p>
 <p>pip install pyserial</p>
 <p>Python program to read sensor data:</p>
