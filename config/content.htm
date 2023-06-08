@@ -1389,6 +1389,59 @@ def upload():
 });
 </pre>
 <h1>zmqRemoteApi</h1>
+<p>who scoring?</p>
+<pre class="brush:py;auto-links:false;toolbar:false" contenteditable="false">import sim as vrep
+
+# Connect to the remote API server
+clientID = vrep.simxStart('127.0.0.1', 19999, True, True, 5000, 5)
+if clientID != -1:
+    print('Connected to remote API server')
+else:
+    print('Failed to connect to remote API server')
+    exit(1)
+
+# Retrieve the handles of the ball and scoreboard
+errorCode, ballHandle = vrep.simxGetObjectHandle(clientID, 'ball', vrep.simx_opmode_blocking)
+errorCode, scoreboardHandle = vrep.simxGetObjectHandle(clientID, 'scoreboard', vrep.simx_opmode_blocking)
+
+# Register a callback function to get the ball kick events
+def ball_kick_callback(msg):
+    data = vrep.simxUnpackFloats(msg[2])
+    objectHandles = [int(data[i]) for i in range(0, len(data), 2)]
+    for handle in objectHandles:
+        if handle == ballHandle:
+            # Ball has been kicked
+            _, playerHandle, _, _, _ = vrep.simxGetObjectParent(clientID, handle, vrep.simx_opmode_blocking)
+            # Get the player number from the player object
+            _, playerNumber = vrep.simxGetObjectIntParameter(clientID, playerHandle, vrep.sim_objintparam_custom, vrep.simx_opmode_blocking)
+            # Perform actions based on the player number
+            print('Goal scored by player:', playerNumber)
+
+# Start streaming the necessary signals and set up the callback
+vrep.simxGetObjectsInVision(clientID, vrep.sim_handle_all, 0, vrep.simx_opmode_streaming)
+vrep.simxGetVisionSensorImage(clientID, ballHandle, 0, vrep.simx_opmode_streaming)
+vrep.simxGetVisionSensorImage(clientID, scoreboardHandle, 0, vrep.simx_opmode_streaming)
+
+# Continuously read the ball kick events using simxGetStringSignal
+while True:
+    errorCode, ballKickSignal = vrep.simxGetStringSignal(clientID, 'ballKickEvent', vrep.simx_opmode_streaming)
+    if errorCode == vrep.simx_return_ok:
+        if ballKickSignal:
+            ball_kick_callback(ballKickSignal)
+    
+    # Retrieve the score from the scoreboard
+    errorCode, score = vrep.simxGetIntegerSignal(clientID, 'score', vrep.simx_opmode_blocking)
+    if errorCode == vrep.simx_return_ok:
+        print('Score:', score)
+
+    # Sleep to avoid high CPU usage
+    vrep.simxPauseCommunication(clientID, True)
+    vrep.simxPauseCommunication(clientID, False)
+
+# Clean up the connection
+vrep.simxFinish(clientID)
+</pre>
+<p></p>
 <script src="https://cdn.jsdelivr.net/npm/zmq@2.15.3/index.min.js"></script>
 <script>
 const zmq = require('zeromq');
