@@ -284,7 +284,8 @@ void loop() {
 <p>By subtracting the measurement value from 2048, the code ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This can help in interpreting the direction or polarity of the magnetic field along the X-axis.</p>
 <p>the ADC has a resolution of 12 bits, which means it can produce 4096 (2^12) different values. With a 12-bit ADC, the range of values it can measure spans from 0 to 4095.</p>
 <p>To calculate the G-force, the code subtracts the reference value (vRef) from the measurement value (axis). By using 2048 as the reference point, it ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This allows for easier interpretation of the direction or polarity of the measured G-force.</p>
-<p>Since the ADC range is from 0 to 4095, subtracting 2048 from the measurement value centers the range around zero. This way, positive values indicate G-forces in one direction, while negative values indicate G-forces in the opposite direction.</p><br />H48C << <a href='H48C.html'>Previous</a> <a href='Python.html'>Next</a> >> Python</div>
+<p>Since the ADC range is from 0 to 4095, subtracting 2048 from the measurement value centers the range around zero. This way, positive values indicate G-forces in one direction, while negative values indicate G-forces in the opposite direction.</p>
+<br />H48C << <a href='H48C.html'>Previous</a> <a href='Python.html'>Next</a> >> Python</div>
         
     <!-- footer -->
       <div class="container">

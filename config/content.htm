@@ -16,7 +16,8 @@
 <p>site: <a href="https://mdewcm2023.github.io/5j-5jgx">https://mdewcm2023.github.io/5j-5jgx</a></p>
 <p>on cad2: <a href="http://cad2.cycu.org/~yen/5jgx/">http://cad2.cycu.org/~yen/5jgx/</a></p>
 <p>on cad2 account jgx: <a href="http://cad2.cycu.org/~jgx/5jgx">http://cad2.cycu.org/~jgx/5jgx</a></p>
-<p>on s1511.cycu.org: <a href="https://s1511.cycu.org/~pj2022/">https://s1511.cycu.org/~pj2022/</a></p>
+<p>因為一個帳號下可以同時維護多個網站, 因此在 public_html 與帳號目錄下都以倉儲代號作為目錄名稱.</p>
+<p>on s1511.cycu.org: <a href="https://s1511.cycu.org/~pj2022/5jgx">https://s1511.cycu.org/~pj2022/5jgx</a></p>
 <p><a href="https://nfuedu-my.sharepoint.com/:v:/g/personal/yen_nfu_edu_tw/EZ1mSm2ZZMRLmA1Bt_KHGHwBOOS3TVIIF90Ehz6p0UI9vA?e=dad4VR">w11 如何在 cad2 主機上建立各分組的靜態網站.mp4</a></p>
 <p>on cad2: <a>https://cad2.cycu.org:8001</a> from hupper -m server.py</p>
 <p>ssh-keygen: <a href="https://mde.tw/blog/2022_fall_courses_w10.html">https://mde.tw/blog/2022_fall_courses_w10.html</a></p>
@@ -100,8 +101,9 @@ ProxyCommand /usr/bin/ncat --proxy p4.cycu.org:3128 --proxy-type http %h %p</pre
 <p>bg5: <a href="https://cad2.cycu.org:8385">https://cad2.cycu.org:8385</a></p>
 <p>bg6: <a href="https://cad2.cycu.org:8386">https://cad2.cycu.org:8386</a></p>
 <p>bg7: <a href="https://cad2.cycu.org:8387">https://cad2.cycu.org:8387</a></p>
-<p>bg8: <a href="https://cad2.cycu.org:8388">https://cad2.cycu.org:8388</a></p><h1>Arduino</h1>
-<p><a href="https://github.com/mdecycu/pj40922/releases/tag/v0.0.246">https://github.com/mdecycu/pj40922/releases/tag/v0.0.246</a> </p>
+<p>bg8: <a href="https://cad2.cycu.org:8388">https://cad2.cycu.org:8388</a></p>
+<h1>Arduino</h1>
+<p><a href="https://github.com/mdecycu/pj40922/releases/tag/v0.0.246">https://github.com/mdecycu/pj40922/releases/tag/v0.0.246</a></p>
 <p><a href="https://youtu.be/67Su8OhVuLs">https://youtu.be/67Su8OhVuLs</a> </p>
 <p><a href="https://kristianlindroos.wordpress.com/2012/05/18/3-axis-accelerometer-h48c-with-arduino-final-project-blender-bluetooth-and-graphical-interface/">https://kristianlindroos.wordpress.com/2012/05/18/3-axis-accelerometer-h48c-with-arduino-final-project-blender-bluetooth-and-graphical-interface/</a></p>
 <p><a href="https://docs.arduino.cc/hardware/nano-33-ble-sense">https://docs.arduino.cc/hardware/nano-33-ble-sense</a></p>
@@ -293,7 +295,8 @@ while (t &lt; 5000):
         f += k
     
     t += 1</pre>
-<p></p><h2>H48C</h2>
+<p></p>
+<h2>H48C</h2>
 <p>Hitachi H48C 3-axis accelerator and Arduino</p>
 <p><a href="/downloads/H48C_3_Axis_Accelerometer.pdf">H48C_3_Axis_Accelerometer.pdf</a></p>
 <p><a href="/downloads/MCP3204.pdf">MCP3204.pdf</a></p>
@@ -659,7 +662,8 @@ void loop() {
 <p>By subtracting the measurement value from 2048, the code ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This can help in interpreting the direction or polarity of the magnetic field along the X-axis.</p>
 <p>the ADC has a resolution of 12 bits, which means it can produce 4096 (2^12) different values. With a 12-bit ADC, the range of values it can measure spans from 0 to 4095.</p>
 <p>To calculate the G-force, the code subtracts the reference value (vRef) from the measurement value (axis). By using 2048 as the reference point, it ensures that the resulting value will be positive when the measurement is smaller than 2048 and negative when it is greater than 2048. This allows for easier interpretation of the direction or polarity of the measured G-force.</p>
-<p>Since the ADC range is from 0 to 4095, subtracting 2048 from the measurement value centers the range around zero. This way, positive values indicate G-forces in one direction, while negative values indicate G-forces in the opposite direction.</p><h2>Python</h2>
+<p>Since the ADC range is from 0 to 4095, subtracting 2048 from the measurement value centers the range around zero. This way, positive values indicate G-forces in one direction, while negative values indicate G-forces in the opposite direction.</p>
+<h2>Python</h2>
 <p>python read arduino sensor data</p>
 <p>pip install pyserial</p>
 <p>Python program to read sensor data:</p>
@@ -682,12 +686,15 @@ while True:
         # Example: print the values
         print(f"X: {x}, Y: {y}, Z: {z}")
 </pre>
-<p></p><h2>Printer</h2>
+<p></p>
+<h2>Printer</h2>
 <p><a href="https://all3dp.com/2/3d-printed-3d-printer/">https://all3dp.com/2/3d-printed-3d-printer/</a> </p>
 <p><a href="https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf">https://gki.informatik.uni-freiburg.de/papers/weigel-etal-robocup-02-kiro.pdf</a> </p>
 <p><a href="https://shopee.tw/amp/57%E6%AD%A5%E9%80%B2%E9%A6%AC%E9%81%94-%E5%A5%97%E8%A3%9D-57BYGH56-%E5%85%A9%E7%9B%B84%E7%B7%9A-%E5%90%AB%E9%A9%85%E5%8B%95%E5%99%A8-TB6560-i.53570320.932808299">57 步進馬達含驅動器</a></p>
 <p><img alt="" height="356" src="/images/57步進馬達含驅動器.png" width="200"/></p>
-<p></p><h1>cmsimde</h1><h2>Upload</h2>
+<p></p>
+<h1>cmsimde</h1>
+<h2>Upload</h2>
 <p><img alt="" height="300" src="/images/網際內容管理五月五日留念.jpg" width="400"/></p>
 <p><img alt="" height="711" src="/images/托福考試.png" width="400"/></p>
 <p></p>
@@ -959,7 +966,8 @@ axios.get('https://api.example.com/data')
 <p>As an AI language model, I don't have real-time data on the percentage of usage between Bootstrap 4.0 and 5.0. However, I can provide you with some general information based on the trends up until my knowledge cutoff in September 2021.</p>
 <p>At that time, Bootstrap 4.0 was the more established and widely adopted version of the framework. Many developers and organizations had already built their projects using Bootstrap 4.0, and it had become the default version for many websites and web applications.</p>
 <p>On the other hand, Bootstrap 5.0 was relatively new at the time of its release in May 2021, and its adoption was gradually increasing. As developers started to explore the new features and improvements in Bootstrap 5.0, they began migrating their existing projects or building new ones using the latest version.</p>
-<p>It's worth noting that the adoption rate of new versions can vary, and it depends on factors such as the size and complexity of existing projects, community support, and the specific needs of developers. It would be best to refer to more recent statistics or surveys, check developer forums, or consult relevant resources to get the most up-to-date information on the usage percentages between Bootstrap 4.0 and 5.0.</p><h2>Games</h2>
+<p>It's worth noting that the adoption rate of new versions can vary, and it depends on factors such as the size and complexity of existing projects, community support, and the specific needs of developers. It would be best to refer to more recent statistics or surveys, check developer forums, or consult relevant resources to get the most up-to-date information on the usage percentages between Bootstrap 4.0 and 5.0.</p>
+<h2>Games</h2>
 <p>Learn Python and Javascript:</p>
 <p style="padding-left: 30px;">Python:</p>
 <p style="padding-left: 60px;"><a href="/downloads/python_beginners.pdf">python_beginners.pdf</a></p>
@@ -973,9 +981,10 @@ axios.get('https://api.example.com/data')
 <p style="padding-left: 30px;"><a href="https://bmsleight.github.io/brython-blocks/">https://bmsleight.github.io/brython-blocks/</a></p>
 <p style="padding-left: 30px;"><a href="https://brython.info/gallery/taquin.html">https://brython.info/gallery/taquin.html</a></p>
 <p><a href="https://github.com/BrythonServer/ggame">https://github.com/BrythonServer/ggame</a></p>
-<p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p><h1>Note</h1>
-<p><a href="https://www.researchgate.net/publication/269294739_Design_and_development_of_an_autonomous_omni-directional_mobile_robot_with_Mecanum_wheels">https://www.researchgate.net/publication/269294739_Design_and_development_of_an_autonomous_omni-directional_mobile_robot_with_Mecanum_wheels</a> </p>
-<p><a href="https://www.mdpi.com/1424-8220/17/9/2073">https://www.mdpi.com/1424-8220/17/9/2073</a> </p>
+<p><a href="https://mde.tw/wcm2023/content/Reeborg.html">https://mde.tw/wcm2023/content/Reeborg.html</a></p>
+<h1>Note</h1>
+<p><a href="https://www.researchgate.net/publication/269294739_Design_and_development_of_an_autonomous_omni-directional_mobile_robot_with_Mecanum_wheels">https://www.researchgate.net/publication/269294739_Design_and_development_of_an_autonomous_omni-directional_mobile_robot_with_Mecanum_wheels</a></p>
+<p><a href="https://www.mdpi.com/1424-8220/17/9/2073">https://www.mdpi.com/1424-8220/17/9/2073</a></p>
 <p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=9216">https://forum.coppeliarobotics.com/viewtopic.php?t=9216</a></p>
 <p><a href="https://ieeexplore.ieee.org/document/9259773">https://ieeexplore.ieee.org/document/9259773</a></p>
 <p><a href="https://en.wikipedia.org/wiki/Mecanum_wheel">https://en.wikipedia.org/wiki/Mecanum_wheel</a></p>
@@ -1032,14 +1041,16 @@ response = send_command('simGetObjectName(0)')
 console.log('Response:', response)
 disconnect()
 </script>
-</p><h2>Windows</h2>
+</p>
+<h2>Windows</h2>
 <p>Microsoft Terminal Service Client: mstsc</p>
 <h2>w13</h2>
 <p><a href="https://mde.tw/cd2023/content/Brython.html?src=https://gist.githubusercontent.com/mdecycu/21cd96ab42159807ac5b6db2440d3e6c/raw/a8cc303b51022324d7319c64720fb54eb59b2ea7/list_all_repo_sites.py">list all links</a></p>
 <h2>w11</h2>
 <p>單機場景加上計分<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) 60</p>
 <p>修改標題, 加入學員 github 帳號, 以及 w11 下的學員網頁      </p>
-<p><a href="https://mdecd2023.github.io/2b2-pj2bg1">pj2bg1</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg1">repo</a>) X 41023246<br/><a href="https://mdecd2023.github.io/2b2-pj2bg2">pj2bg2</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg2">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg3">pj2bg3</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg3">repo</a>) 41023252, 41023211<br/><a href="https://mdecd2023.github.io/2b2-pj2bg4">pj2bg4</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg4">repo</a>) X 41023201<br/><a href="https://mdecd2023.github.io/2b2-pj2bg5">pj2bg5</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg5">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg6">pj2bg6</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg6">repo</a>) 41023226, 41023220 網頁標題未改, 41023233<br/><a href="https://mdecd2023.github.io/2b2-pj2bg7">pj2bg7</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg7">repo</a>) 41023228 網頁標題未改 41023219, 41023221<br/><a href="https://mdecd2023.github.io/2b2-pj2bg8">pj2bg8</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg8">repo</a>) X 41023242<br/><a href="https://mdecd2023.github.io/2b2-pj2bg9">pj2bg9</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg9">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg10">pj2bg10</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg10">repo</a>) 41023241 無學員 github 帳號<br/><a href="https://mdecd2023.github.io/2b2-pj2bg11">pj2bg11</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg11">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg12">pj2bg12</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg12">repo</a>) 41023251, 41023234 網頁標題未改<br/><a href="https://mdecd2023.github.io/2b2-pj2bg13">pj2bg13</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg13">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg15">pj2bg15</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg15">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg16">pj2bg16</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg16">repo</a>) X</p><h2>wss</h2>
+<p><a href="https://mdecd2023.github.io/2b2-pj2bg1">pj2bg1</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg1">repo</a>) X 41023246<br/><a href="https://mdecd2023.github.io/2b2-pj2bg2">pj2bg2</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg2">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg3">pj2bg3</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg3">repo</a>) 41023252, 41023211<br/><a href="https://mdecd2023.github.io/2b2-pj2bg4">pj2bg4</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg4">repo</a>) X 41023201<br/><a href="https://mdecd2023.github.io/2b2-pj2bg5">pj2bg5</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg5">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg6">pj2bg6</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg6">repo</a>) 41023226, 41023220 網頁標題未改, 41023233<br/><a href="https://mdecd2023.github.io/2b2-pj2bg7">pj2bg7</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg7">repo</a>) 41023228 網頁標題未改 41023219, 41023221<br/><a href="https://mdecd2023.github.io/2b2-pj2bg8">pj2bg8</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg8">repo</a>) X 41023242<br/><a href="https://mdecd2023.github.io/2b2-pj2bg9">pj2bg9</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg9">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg10">pj2bg10</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg10">repo</a>) 41023241 無學員 github 帳號<br/><a href="https://mdecd2023.github.io/2b2-pj2bg11">pj2bg11</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg11">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg12">pj2bg12</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg12">repo</a>) 41023251, 41023234 網頁標題未改<br/><a href="https://mdecd2023.github.io/2b2-pj2bg13">pj2bg13</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg13">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg14">pj2bg14</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg14">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg15">pj2bg15</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg15">repo</a>) X<br/><a href="https://mdecd2023.github.io/2b2-pj2bg16">pj2bg16</a> (<a href="https://github.com/mdecd2023/2b2-pj2bg16">repo</a>) X</p>
+<h2>wss</h2>
 <p><a href="https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/">https://blog.heidt.biz/blog/2012/07/19/ssl-websocket-proxy-with-stunnel-howto/</a></p>
 <p><a href="https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel">https://stackoverflow.com/questions/15403905/warping-ratchet-with-stunnel</a></p>
 <p><a href="https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel">https://stackoverflow.com/questions/25849193/php-websocket-redirect-with-stunnel</a></p>
@@ -1526,8 +1537,9 @@ async function moveCube(translation) {
     position: newPosition
   });
 }
-</script><h1>Coppeliasim</h1>
-<p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=3431">https://forum.coppeliarobotics.com/viewtopic.php?t=3431</a> </p>
+</script>
+<h1>Coppeliasim</h1>
+<p><a href="https://forum.coppeliarobotics.com/viewtopic.php?t=3431">https://forum.coppeliarobotics.com/viewtopic.php?t=3431</a></p>
 <p>you have several different components that could cause that jittering, here the main:</p>
 <ul>
 <li>bad mass/inertia distribution. This is mainly the case when using Bullet and ODE. Check <a class="postlink" href="http://www.coppeliarobotics.com/helpFiles/en/designingDynamicSimulations.htm#masses">this page</a>.</li>
@@ -2000,7 +2012,8 @@ end
 function verbose()
     return sim.getNamedInt32Param('visualizationStream.verbose') or 0
 end
-</pre><h2>WebSocket</h2>
+</pre>
+<h2>WebSocket</h2>
 <p>希望能讓 CoppeliaSim 的 Visualization stream 在 https 運作</p>
 <p>使用 Stunnel 可以將 23020 轉向 443, 只要提供 self-signed certification 就可以.</p>
 <p>但是其中的雙向資料是透過 ws:// websocket protocol 進行傳送, 因此必須處理為 wss:// 才可以與 https 結合運作.</p>
@@ -2113,7 +2126,8 @@ port=sim.getNamedInt32Param('wsRemoteApi.port') or 443</pre>
 <p><img alt="" height="400" src="/images/counter4.jpg" width="400"/></p>
 <p><img alt="" height="400" src="/images/counter5.jpg" width="400"/></p>
 <p><img alt="" height="400" src="/images/counter6.jpg" width="400"/></p>
-<p><img alt="" height="400" src="/images/counter7.jpg" width="400"/></p><h2>copsim</h2>
+<p><img alt="" height="400" src="/images/counter7.jpg" width="400"/></p>
+<h2>copsim</h2>
 <p>Flutter app and Coppeliasim:</p>
 <p style="padding-left: 30px;">Establish communication from the Flutter app: In your Flutter app, you'll need to establish a connection to the ZMQRemoteAPI server using the appropriate ZeroMQ library for Flutter. One popular library is zeromq.dart, which provides ZeroMQ bindings for Dart.</p>
 <pre class="brush:dart;auto-links:false;toolbar:false" contenteditable="false">import 'package:zeromq/zeromq.dart';
@@ -2380,7 +2394,8 @@ def close_connection(ev):
     ws.close()
     document['openbtn'].disabled = False
 </script>
-</p><h1>Brython</h1>
+</p>
+<h1>Brython</h1>
 <p><a href="https://en.wikipedia.org/wiki/Python_(programming_language)">https://en.wikipedia.org/wiki/Python_(programming_language)</a></p>
 <h4>Examples:</h4>
 <p style="padding-left: 30px;"><a href="https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d">https://gist.github.com/mdecycu/d9082d678096bd58378d6afe2c7fa05d</a></p>
@@ -2955,4 +2970,5 @@ window.requestAnimationFrame(animate)
 <p>STL part viewer</p>
 <p height="480" id="stl" width="640"></p>
 <p>
-<script type="text/python"></script></p>
+<script type="text/python"></script>
+</p>
